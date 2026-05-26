@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nicolas Godinaud — Portfolio IA</title>
+  <style>
+    /* ── Reset & base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:         #ffffff;
+      --bg2:        #f8fafc;
+      --bg3:        #f1f5f9;
+      --border:     #e2e8f0;
+      --accent:     #2563eb;
+      --accent-light: #eff6ff;
+      --accent2:    #16a34a;
+      --accent3:    #dc2626;
+      --text:       #0f172a;
+      --text-muted: #64748b;
+      --font:       'Inter', 'Segoe UI', system-ui, sans-serif;
+      --mono:       'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── Navigation ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2.5rem;
+      height: 60px;
+      background: rgba(255,255,255,.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    }
+    .nav-logo {
+      font-family: var(--mono);
+      font-size: .95rem;
+      color: var(--accent);
+      letter-spacing: .02em;
+    }
+    .nav-links { display: flex; gap: 2rem; }
+    .nav-links a {
+      font-size: .875rem;
+      color: var(--text-muted);
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--text); text-decoration: none; }
+
+    /* ── Hero ── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: flex-start;
+      padding: 6rem 10vw 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 80% 20%, rgba(37,99,235,.06) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 60% at 10% 80%, rgba(22,163,74,.04) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .hero-eyebrow {
+      font-family: var(--mono);
+      font-size: .85rem;
+      color: var(--accent);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    .hero h1 {
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      font-weight: 700;
+      line-height: 1.15;
+      margin-bottom: .75rem;
+    }
+    .hero h1 span { color: var(--accent); }
+    .hero-subtitle {
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      color: var(--text-muted);
+      max-width: 560px;
+      margin-bottom: 2.5rem;
+    }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: .75rem; margin-bottom: 3rem; }
+    .hero-tag {
+      font-family: var(--mono);
+      font-size: .78rem;
+      padding: .3rem .75rem;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      background: var(--bg2);
+    }
+    .hero-cta {
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: var(--accent);
+      color: #ffffff;
+      font-weight: 600;
+      font-size: .9rem;
+      padding: .65rem 1.4rem;
+      border-radius: 8px;
+      transition: background .2s, transform .2s;
+      box-shadow: 0 2px 8px rgba(37,99,235,.25);
+    }
+    .hero-cta:hover { background: #1d4ed8; transform: translateY(-1px); text-decoration: none; }
+
+    /* ── Section wrapper ── */
+    .section {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 5rem 2rem;
+    }
+    .section-header {
+      display: flex; align-items: center; gap: 1rem;
+      margin-bottom: 3rem;
+    }
+    .section-number {
+      font-family: var(--mono);
+      font-size: .8rem;
+      color: var(--accent);
+    }
+    .section-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+    }
+    .section-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── Project card ── */
+    .project-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: border-color .3s, box-shadow .3s;
+      margin-bottom: 2.5rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,.05);
+    }
+    .project-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 4px 24px rgba(37,99,235,.1);
+    }
+    .project-header {
+      display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap;
+      gap: 1rem;
+      padding: 2rem 2rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .project-meta { display: flex; flex-direction: column; gap: .4rem; }
+    .project-number {
+      font-family: var(--mono);
+      font-size: .75rem;
+      color: var(--accent);
+      letter-spacing: .1em;
+    }
+    .project-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    .project-context {
+      font-size: .85rem;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+    .project-badges { display: flex; flex-wrap: wrap; gap: .5rem; align-items: flex-start; }
+    .badge {
+      font-family: var(--mono);
+      font-size: .72rem;
+      font-weight: 500;
+      padding: .25rem .65rem;
+      border-radius: 6px;
+    }
+    .badge-blue   { background: #eff6ff; color: #1d4ed8; }
+    .badge-green  { background: #f0fdf4; color: #15803d; }
+    .badge-orange { background: #fffbeb; color: #b45309; }
+    .badge-purple { background: #f5f3ff; color: #6d28d9; }
+    .badge-red    { background: #fef2f2; color: #b91c1c; }
+
+    .project-body { padding: 2rem; }
+
+    /* Two-column layout */
+    .project-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+    @media (max-width: 720px) { .project-cols { grid-template-columns: 1fr; } }
+
+    .project-section-title {
+      font-family: var(--mono);
+      font-size: .75rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: .75rem;
+    }
+    .project-desc {
+      font-size: .9rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    /* Steps list */
+    .steps { list-style: none; display: flex; flex-direction: column; gap: .6rem; }
+    .steps li {
+      display: flex; align-items: flex-start; gap: .6rem;
+      font-size: .875rem;
+      color: var(--text-muted);
+    }
+    .steps li::before {
+      content: '▸';
+      color: var(--accent);
+      flex-shrink: 0;
+      margin-top: .05rem;
+    }
+
+    /* Results grid */
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .result-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+    }
+    .result-label {
+      font-family: var(--mono);
+      font-size: .7rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: .35rem;
+    }
+    .result-value {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--accent2);
+    }
+    .result-sub {
+      font-size: .75rem;
+      color: var(--text-muted);
+      margin-top: .2rem;
+    }
+
+    /* Tech stack */
+    .tech-stack {
+      display: flex; flex-wrap: wrap; gap: .6rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+    .tech-tag {
+      font-family: var(--mono);
+      font-size: .78rem;
+      padding: .3rem .8rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      background: var(--bg3);
+    }
+
+    /* Pipeline visual */
+    .pipeline {
+      display: flex; align-items: center; flex-wrap: wrap; gap: .5rem;
+      padding: 1.25rem;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-bottom: 1.5rem;
+    }
+    .pipe-step {
+      font-family: var(--mono);
+      font-size: .75rem;
+      padding: .3rem .7rem;
+      border-radius: 6px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      color: var(--text);
+      box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    }
+    .pipe-arrow {
+      color: var(--accent);
+      font-size: .9rem;
+      flex-shrink: 0;
+    }
+
+    /* Model comparison table */
+    .model-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .85rem;
+      margin-bottom: 1.5rem;
+    }
+    .model-table th {
+      font-family: var(--mono);
+      font-size: .72rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-align: left;
+      padding: .6rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .model-table td {
+      padding: .65rem 1rem;
+      border-bottom: 1px solid rgba(48,54,61,.5);
+      color: var(--text-muted);
+    }
+    .model-table tr:last-child td { border-bottom: none; }
+    .model-table tr.best td { color: var(--text); }
+    .model-table tr.best td:first-child { color: var(--accent2); font-weight: 600; }
+    .model-table .score { font-family: var(--mono); }
+    .model-table .good  { color: var(--accent2); font-weight: 600; }
+    .model-table .best-badge {
+      display: inline-block;
+      font-size: .65rem;
+      font-family: var(--mono);
+      padding: .15rem .45rem;
+      border-radius: 4px;
+      background: #f0fdf4;
+      color: #15803d;
+      border: 1px solid #bbf7d0;
+      margin-left: .5rem;
+      vertical-align: middle;
+    }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      text-align: center;
+      padding: 2.5rem;
+      font-size: .825rem;
+      color: var(--text-muted);
+      font-family: var(--mono);
+      background: var(--bg2);
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg2); }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+
+    /* ── Interpretability box ── */
+    .interp-box {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 10px 10px 0;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Navigation ── -->
+<nav>
+  <span class="nav-logo">ng.portfolio</span>
+  <div class="nav-links">
+    <a href="#projets">Projets</a>
+    <a href="mailto:nicolas.godinaud@gmail.com">Contact</a>
+  </div>
+</nav>
+
+<!-- ── Hero ── -->
+<section class="hero">
+  <div class="hero-eyebrow">Ingénieur IA</div>
+  <h1>Nicolas <span>Godinaud</span></h1>
+  <p class="hero-subtitle">
+    Ingénieur IA spécialisé en Machine Learning et Deep Learning.
+    Ce portfolio présente les projets réalisés lors de ma formation, couvrant des domaines variés de l'intelligence artificielle.
+  </p>
+  <div class="hero-tags">
+    <span class="hero-tag">Supervised Learning</span>
+    <span class="hero-tag">Deep Learning</span>
+    <span class="hero-tag">NLP</span>
+    <span class="hero-tag">Computer Vision</span>
+    <span class="hero-tag">Python</span>
+    <span class="hero-tag">scikit-learn</span>
+    <span class="hero-tag">PyTorch</span>
+  </div>
+  <a class="hero-cta" href="#projets">Voir les projets ↓</a>
+</section>
+
+<!-- ── Projects section ── -->
+<div id="projets" class="section">
+  <div class="section-header">
+    <span class="section-number">01</span>
+    <h2 class="section-title">Projets</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <!-- ── Project 1: Scoring Model ── -->
+  <article class="project-card">
+    <div class="project-header">
+      <div class="project-meta">
+        <span class="project-number">PROJET 01 · MACHINE LEARNING SUPERVISÉ</span>
+        <h3 class="project-title">Modèle de scoring crédit</h3>
+        <span class="project-context">Prêt à dépenser — Algorithme de classification pour l'octroi de crédits à la consommation</span>
+      </div>
+      <div class="project-badges">
+        <span class="badge badge-blue">Classification binaire</span>
+        <span class="badge badge-green">Feature Engineering</span>
+        <span class="badge badge-orange">SHAP</span>
+        <span class="badge badge-purple">Optimisation métier</span>
+      </div>
+    </div>
+
+    <div class="project-body">
+
+      <!-- Context + Approach -->
+      <div class="project-cols">
+        <div>
+          <p class="project-section-title">Contexte & Problématique</p>
+          <p class="project-desc">
+            En tant que Data Scientist au sein de la société financière <em>Prêt à dépenser</em>, l'objectif est de concevoir un outil de <strong>scoring crédit</strong> capable de calculer la probabilité de remboursement d'un client et de classifier automatiquement les demandes (crédit accordé / refusé).
+          </p>
+          <br />
+          <p class="project-desc">
+            Le modèle doit être facilement <strong>interprétable</strong> pour les chargés de relation client, et tenir compte d'un <strong>déséquilibre de coût métier</strong> : un faux négatif (crédit accordé à un mauvais payeur) est 10× plus coûteux qu'un faux positif (bon client refusé).
+          </p>
+        </div>
+        <div>
+          <p class="project-section-title">Démarche</p>
+          <ul class="steps">
+            <li>Analyse exploratoire du dataset Home Credit (Kaggle) : outliers, valeurs manquantes, distributions</li>
+            <li>Feature engineering : création de +3 nouvelles variables pertinentes (taux de paiement, retards moyens, etc.)</li>
+            <li>Conception d'un score métier normalisé pénalisant les faux négatifs (×10)</li>
+            <li>Benchmark de 5 modèles avec pipelines scikit-learn, Cross-Validation 5-folds et GridSearchCV</li>
+            <li>Gestion du déséquilibre de classes : <code>class_weight</code>, SMOTE, <code>scale_pos_weight</code></li>
+            <li>Optimisation du seuil de décision par minimisation du coût métier</li>
+            <li>Interprétabilité globale et locale avec SHAP</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Pipeline -->
+      <p class="project-section-title">Pipeline de modélisation</p>
+      <div class="pipeline">
+        <span class="pipe-step">EDA</span>
+        <span class="pipe-arrow">→</span>
+        <span class="pipe-step">Feature Engineering</span>
+        <span class="pipe-arrow">→</span>
+        <span class="pipe-step">Preprocessing</span>
+        <span class="pipe-arrow">→</span>
+        <span class="pipe-step">Rééquilibrage classes</span>
+        <span class="pipe-arrow">→</span>
+        <span class="pipe-step">GridSearchCV (5-folds)</span>
+        <span class="pipe-arrow">→</span>
+        <span class="pipe-step">Optimisation seuil</span>
+        <span class="pipe-arrow">→</span>
+        <span class="pipe-step">SHAP</span>
+      </div>
+
+      <!-- Model comparison -->
+      <p class="project-section-title">Comparaison des modèles</p>
+      <table class="model-table">
+        <thead>
+          <tr>
+            <th>Modèle</th>
+            <th>Score métier ↓</th>
+            <th>AUC-ROC ↑</th>
+            <th>Gestion déséquilibre</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Dummy Classifier</td>
+            <td class="score">0.467</td>
+            <td class="score">0.500</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td>Random Forest Classifier</td>
+            <td class="score">0.332</td>
+            <td class="score">0.724</td>
+            <td>class_weight balanced</td>
+          </tr>
+          <tr>
+            <td>Régression Logistique</td>
+            <td class="score">0.315</td>
+            <td class="score">0.749</td>
+            <td>class_weight balanced</td>
+          </tr>
+          <tr>
+            <td>XGBoost Classifier</td>
+            <td class="score">0.313</td>
+            <td class="score">0.751</td>
+            <td>scale_pos_weight</td>
+          </tr>
+          <tr class="best">
+            <td>XGBoost + Feature Engineering <span class="best-badge">★ MEILLEUR</span></td>
+            <td class="score good">0.303</td>
+            <td class="score good">0.765</td>
+            <td>scale_pos_weight</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Key results -->
+      <p class="project-section-title">Résultats clés</p>
+      <div class="results-grid">
+        <div class="result-card">
+          <div class="result-label">Score métier</div>
+          <div class="result-value">0.303</div>
+          <div class="result-sub">XGBoost + FE (vs 0.467 baseline)</div>
+        </div>
+        <div class="result-card">
+          <div class="result-label">AUC-ROC</div>
+          <div class="result-value">0.765</div>
+          <div class="result-sub">XGBoost + Feature Engineering</div>
+        </div>
+        <div class="result-card">
+          <div class="result-label">Interprétabilité</div>
+          <div class="result-value" style="font-size:1rem;">SHAP</div>
+          <div class="result-sub">Globale + locale par client</div>
+        </div>
+        <div class="result-card">
+          <div class="result-label">Top features</div>
+          <div class="result-value" style="font-size:.85rem; line-height:1.3;">EXT_SOURCE_2&nbsp;/ EXT_SOURCE_3</div>
+          <div class="result-sub">+ variables FE (PAYMENT_RATE…)</div>
+        </div>
+      </div>
+
+      <!-- Interpretability note -->
+      <div class="interp-box">
+        <p class="project-section-title" style="margin-bottom:.5rem;">Interprétabilité du modèle</p>
+        <p class="project-desc">
+          <strong style="color:var(--text);">Globale</strong> : les variables les plus influentes sur l'ensemble du jeu de données sont <code>EXT_SOURCE_2</code>, <code>EXT_SOURCE_3</code> (scores externes), ainsi que des variables créées lors du feature engineering : <code>PAYMENT_RATE</code> (taux de remboursement), <code>INSTAL_DPD_MEAN</code> (retards moyens) et <code>INSTAL_DAYS_ENTRY_PAYMENT_MEAN</code>.
+        </p>
+        <br />
+        <p class="project-desc">
+          <strong style="color:var(--text);">Locale</strong> : les valeurs SHAP permettent d'expliquer chaque prédiction individuelle — les variables en faveur du remboursement (classe 0) et celles signalant un risque de défaut (classe 1), comme <code>INSTALL_PAYMENT_DIFF_SUM</code> et <code>INSTALL_PAYMENT_DIFF_MAX</code>.
+        </p>
+      </div>
+
+      <!-- Tech stack -->
+      <div class="tech-stack">
+        <span class="tech-tag">Python</span>
+        <span class="tech-tag">scikit-learn</span>
+        <span class="tech-tag">XGBoost</span>
+        <span class="tech-tag">imbalanced-learn</span>
+        <span class="tech-tag">SHAP</span>
+        <span class="tech-tag">pandas</span>
+        <span class="tech-tag">numpy</span>
+        <span class="tech-tag">matplotlib</span>
+        <span class="tech-tag">seaborn</span>
+        <span class="tech-tag">GridSearchCV</span>
+        <span class="tech-tag">RandomizedSearchCV</span>
+        <span class="tech-tag">Pipeline</span>
+        <span class="tech-tag">SMOTE</span>
+        <span class="tech-tag">Jupyter Notebook</span>
+      </div>
+
+    </div>
+  </article>
+
+  <!-- Placeholder for future projects -->
+  <div style="border:1px dashed var(--border); border-radius:16px; padding:3rem 2rem; text-align:center; color:var(--text-muted);">
+    <p style="font-family:var(--mono); font-size:.85rem;">// Projets suivants à venir</p>
+  </div>
+
+</div>
+
+<!-- ── Footer ── -->
+<footer>
+  <p>Nicolas Godinaud · nicolas.godinaud@gmail.com </p>
+</footer>
+
+</body>
+</html>

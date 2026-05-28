@@ -126,7 +126,7 @@
     }
     .section-header {
       display: flex; align-items: center; gap: 1rem;
-      margin-bottom: 3rem;
+      margin-bottom: 1.25rem;
     }
     .section-number {
       font-family: var(--mono);
@@ -463,6 +463,71 @@
     ::-webkit-scrollbar-track { background: var(--bg2); }
     ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
 
+    /* ── Project index tiles ── */
+    .project-index {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0;
+    }
+    .project-index-title {
+      font-family: var(--mono);
+      font-size: .75rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: .5rem;
+    }
+    .project-tiles {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2.5rem;
+    }
+    .project-tile {
+      display: flex;
+      flex-direction: column;
+      gap: .4rem;
+      padding: 1.1rem 1.25rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      text-decoration: none;
+      transition: border-color .2s, box-shadow .2s, transform .2s;
+    }
+    .project-tile:hover {
+      border-color: var(--accent);
+      box-shadow: 0 4px 16px rgba(37,99,235,.1);
+      transform: translateY(-2px);
+      text-decoration: none;
+    }
+    .project-tile-number {
+      font-family: var(--mono);
+      font-size: .7rem;
+      color: var(--accent);
+      letter-spacing: .08em;
+    }
+    .project-tile-title {
+      font-size: .92rem;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.3;
+    }
+    .project-tile-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .35rem;
+      margin-top: .2rem;
+    }
+    .project-tile-tag {
+      font-family: var(--mono);
+      font-size: .65rem;
+      padding: .15rem .5rem;
+      border-radius: 4px;
+      background: var(--bg3);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+
     /* ── Interpretability box ── */
     .interp-box {
       background: var(--bg2);
@@ -519,19 +584,43 @@
     <div class="section-line"></div>
   </div>
 
+  <!-- ── Project index ── -->
+  <div class="project-index">
+    <div class="project-tiles">
+      <a class="project-tile" href="#projet-01">
+        <span class="project-tile-number">PROJET 01</span>
+        <span class="project-tile-title">Modèle de scoring crédit</span>
+        <div class="project-tile-tags">
+          <span class="project-tile-tag">ML supervisé</span>
+          <span class="project-tile-tag">XGBoost</span>
+          <span class="project-tile-tag">SHAP</span>
+        </div>
+      </a>
+      <a class="project-tile" href="#projet-02">
+        <span class="project-tile-number">PROJET 02</span>
+        <span class="project-tile-title">Classification automatique d'images d'articles e-commerce</span>
+        <div class="project-tile-tags">
+          <span class="project-tile-tag">Computer Vision</span>
+          <span class="project-tile-tag">NLP</span>
+          <span class="project-tile-tag">CNN</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
   <!-- ── Project 1: Scoring Model ── -->
-  <article class="project-card">
+  <article class="project-card" id="projet-01">
     <div class="project-header">
       <div class="project-meta">
         <span class="project-number">PROJET 01 · MACHINE LEARNING SUPERVISÉ</span>
         <h3 class="project-title">Modèle de scoring crédit</h3>
-        <span class="project-context">Prêt à dépenser — Algorithme de classification pour l'octroi de crédits à la consommation</span>
-      </div>
-      <div class="project-badges">
-        <span class="badge badge-blue">Classification binaire</span>
-        <span class="badge badge-green">Feature Engineering</span>
-        <span class="badge badge-orange">SHAP</span>
-        <span class="badge badge-purple">Optimisation métier</span>
+        <span class="project-context"> Algorithmes de classification pour l'octroi de crédits à la consommation</span>
+        <div class="project-badges">
+          <span class="badge badge-blue">Classification binaire</span>
+          <span class="badge badge-green">Feature Engineering</span>
+          <span class="badge badge-orange">SHAP</span>
+          <span class="badge badge-purple">Optimisation métier</span>
+        </div>
       </div>
     </div>
 
@@ -669,12 +758,12 @@
   </article>
 
   <!-- ── Project 2: Image Classification ── -->
-  <article class="project-card">
+  <article class="project-card" id="projet-02">
     <div class="project-header">
       <div class="project-meta">
         <span class="project-number">PROJET 02 · COMPUTER VISION & NLP </span>
-        <h3 class="project-title">Classification automatique d'articles e-commerce</h3>
-        <span class="project-context">Place de marché — Moteur de classification automatique par image et description texte</span>
+        <h3 class="project-title">Classification automatique d'images d'articles e-commerce</h3>
+        <span class="project-context">Moteur de classification automatique par image et description texte</span>
       </div>
       <div class="project-badges">
         <span class="badge badge-blue">NLP</span>
@@ -691,11 +780,11 @@
         <div>
           <p class="project-section-title">Contexte & Problématique</p>
           <p class="project-desc">
-            Pour la marketplace e-commerce <em>Place de marché</em>, les catégories de produits sont attribuées manuellement par les vendeurs — source d'erreurs et frein au passage à l'échelle. L'objectif est d'étudier la <strong>faisabilité d'un moteur de classification automatique</strong> des articles à partir de leur image et de leur description texte, puis de développer un modèle supervisé.
+            Dans ce projet, on travaille pour une marketplace e-commerce fictive, sur laquelle les catégories de produits étaient jusqu'alors attribuées manuellement par les vendeurs — source d'erreurs et frein au passage à l'échelle. L'objectif est d'étudier la <strong>faisabilité d'un moteur de classification automatique</strong> des articles à partir de leur image et de leur description texte, puis de développer un <strong>modèle supervisé de classification d'images</strong>.
           </p>
           <br />
           <p class="project-desc">
-            Le dataset comprend <strong>7 catégories</strong> de produits : Watches, Computers, Home Furnishing, Kitchen & Dining, Beauty & Personal Care, Home Decor, Baby Care.
+            Le dataset comprend 906 produits, répartis en <strong>7 catégories</strong> : Watches, Computers, Home Furnishing, Kitchen & Dining, Beauty & Personal Care, Home Decor, Baby Care.
           </p>
         </div>
         <div>
@@ -713,6 +802,10 @@
 
       <!-- Data samples -->
       <p class="project-section-title">Présentation des données</p>
+      <p class="project-desc">
+         Voici un exemple de 5 produits présents parmi les données, avec leur catégorie respective, leur image et leur description texte.
+      </p>
+      <br />
       <div class="samples-grid">
         <div class="sample-card">
           <img src="images/sample_55b85ea15a1536d46b7190ad6fff8ce7.jpg" alt="Home Furnishing" onclick="openLightbox('images/sample_55b85ea15a1536d46b7190ad6fff8ce7.jpg')" />
@@ -720,14 +813,6 @@
             <div class="sample-category">Home Furnishing</div>
             <div class="sample-name">Elegance Polyester Eyelet Door Curtain</div>
             <div class="sample-desc">Floral curtain made from 100% high quality polyester fabric with eyelet style metal ring.</div>
-          </div>
-        </div>
-        <div class="sample-card">
-          <img src="images/sample_7b72c92c2f6c40268628ec5f14c6d590.jpg" alt="Baby Care" onclick="openLightbox('images/sample_7b72c92c2f6c40268628ec5f14c6d590.jpg')" />
-          <div class="sample-card-body">
-            <div class="sample-category">Baby Care</div>
-            <div class="sample-name">Sathiyas Cotton Bath Towel</div>
-            <div class="sample-desc">Set of 3 cotton bath towels in Red, Yellow and Blue. Machine washable, 500 GSM.</div>
           </div>
         </div>
         <div class="sample-card">
@@ -881,7 +966,7 @@
         </div>
         <div class="result-card">
           <div class="result-label">Accuracy image</div>
-          <div class="result-value">80%</div>
+          <div class="result-value">0.78</div>
           <div class="result-sub">CNN + Transfer Learning + Data Aug.</div>
         </div>
         <div class="result-card">
@@ -900,13 +985,13 @@
       <p class="project-section-title">Visuels</p>
       <div class="project-cols" style="margin-bottom:2rem;">
         <div>
-          <p style="font-family:var(--mono);font-size:.72rem;color:var(--text-muted);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.08em;">Clustering t-SNE — TF-IDF (ARI = 0.45)</p>
+          <p style="font-family:var(--mono);font-size:.72rem;color:var(--text-muted);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.08em;">Représentation 2D (t-SNE) des features textes extraites (TF-IDF)</p>
           <a class="lightbox-trigger" onclick="openLightbox('images/proj6_tsne_tfidf.jpg')">
             <img src="images/proj6_tsne_tfidf.jpg" alt="Visualisation t-SNE TF-IDF" style="border-radius:8px;border:1px solid var(--border);" />
           </a>
         </div>
         <div>
-          <p style="font-family:var(--mono);font-size:.72rem;color:var(--text-muted);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.08em;">Matrice de confusion — CNN + Transfer Learning + Data Augmentation</p>
+          <p style="font-family:var(--mono);font-size:.72rem;color:var(--text-muted);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.08em;">Résultats : classification sur un ensemble de 224 images de test</p>
           <a class="lightbox-trigger" onclick="openLightbox('images/proj6_confusion_matrix.jpg')">
             <img src="images/proj6_confusion_matrix.jpg" alt="Matrice de confusion CNN TL DA" style="border-radius:8px;border:1px solid var(--border);" />
           </a>

@@ -357,6 +357,107 @@
       background: var(--bg2);
     }
 
+    /* ── Data samples grid ── */
+    .samples-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .sample-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      transition: box-shadow .2s, border-color .2s;
+    }
+    .sample-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 4px 16px rgba(37,99,235,.08);
+    }
+    .sample-card img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      display: block;
+      cursor: zoom-in;
+    }
+    .sample-card-body {
+      padding: .6rem .75rem .75rem;
+    }
+    .sample-category {
+      font-family: var(--mono);
+      font-size: .65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--accent);
+      margin-bottom: .3rem;
+    }
+    .sample-name {
+      font-size: .78rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: .3rem;
+      line-height: 1.3;
+    }
+    .sample-desc {
+      font-size: .72rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* ── Lightbox ── */
+    .lightbox-trigger {
+      cursor: zoom-in;
+      display: block;
+      position: relative;
+    }
+    .lightbox-trigger::after {
+      content: '⤢';
+      position: absolute;
+      bottom: .5rem; right: .5rem;
+      background: rgba(255,255,255,.85);
+      color: var(--accent);
+      font-size: .8rem;
+      padding: .2rem .4rem;
+      border-radius: 4px;
+      opacity: 0;
+      transition: opacity .2s;
+      pointer-events: none;
+    }
+    .lightbox-trigger:hover::after { opacity: 1; }
+    .lightbox-trigger img { display: block; width: 100%; }
+
+    #lightbox {
+      display: none;
+      position: fixed; inset: 0; z-index: 1000;
+      background: rgba(0,0,0,.75);
+      backdrop-filter: blur(4px);
+      align-items: center; justify-content: center;
+      cursor: zoom-out;
+    }
+    #lightbox.open { display: flex; }
+    #lightbox img {
+      max-width: 90vw;
+      max-height: 90vh;
+      border-radius: 10px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.4);
+      cursor: default;
+    }
+    #lightbox-close {
+      position: fixed; top: 1.25rem; right: 1.5rem;
+      color: white; font-size: 1.75rem; line-height: 1;
+      cursor: pointer; opacity: .8;
+      transition: opacity .2s;
+      background: none; border: none;
+    }
+    #lightbox-close:hover { opacity: 1; }
+
     /* ── Scrollbar ── */
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: var(--bg2); }
@@ -375,6 +476,12 @@
 </head>
 <body>
 
+<!-- ── Lightbox ── -->
+<div id="lightbox">
+  <button id="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation()" />
+</div>
+
 <!-- ── Navigation ── -->
 <nav>
   <span class="nav-logo">ng.portfolio</span>
@@ -390,7 +497,7 @@
   <h1>Nicolas <span>Godinaud</span></h1>
   <p class="hero-subtitle">
     Ingénieur IA spécialisé en Machine Learning et Deep Learning.
-    Ce portfolio présente les projets réalisés lors de ma formation, couvrant des domaines variés de l'intelligence artificielle.
+    Ce portfolio présente les projets réalisés lors de ma formation OpenClassrooms, couvrant divers domaines de l'intelligence artificielle.
   </p>
   <div class="hero-tags">
     <span class="hero-tag">Supervised Learning</span>
@@ -435,7 +542,7 @@
         <div>
           <p class="project-section-title">Contexte & Problématique</p>
           <p class="project-desc">
-            En tant que Data Scientist au sein de la société financière <em>Prêt à dépenser</em>, l'objectif est de concevoir un outil de <strong>scoring crédit</strong> capable de calculer la probabilité de remboursement d'un client et de classifier automatiquement les demandes (crédit accordé / refusé).
+            Au cours de ce projet, on se positionne en tant que Data Scientist travaillant pour une société financière fictive. L'objectif est de concevoir un outil de <strong>scoring crédit</strong> capable de calculer la probabilité de remboursement d'un client et de classifier automatiquement les demandes (crédit accordé / refusé).
           </p>
           <br />
           <p class="project-desc">
@@ -445,13 +552,13 @@
         <div>
           <p class="project-section-title">Démarche</p>
           <ul class="steps">
-            <li>Analyse exploratoire du dataset Home Credit (Kaggle) : outliers, valeurs manquantes, distributions</li>
-            <li>Feature engineering : création de +3 nouvelles variables pertinentes (taux de paiement, retards moyens, etc.)</li>
-            <li>Conception d'un score métier normalisé pénalisant les faux négatifs (×10)</li>
+            <li><span>Analyse exploratoire du dataset <a href="https://www.kaggle.com/competitions/home-credit-default-risk/data" target="_blank">Home Credit Default Risk</a> : outliers, valeurs manquantes, distributions</span></li>
+            <li>Feature engineering : création de nouvelles variables pertinentes (taux de paiement, retards moyens, etc.)</li>
+            <li>Conception d'un score métier pénalisant les faux négatifs (×10). Objectif des modèles : minimiser le score métier</li>
             <li>Benchmark de 5 modèles avec pipelines scikit-learn, Cross-Validation 5-folds et GridSearchCV</li>
-            <li>Gestion du déséquilibre de classes : <code>class_weight</code>, SMOTE, <code>scale_pos_weight</code></li>
+            <li>Gestion du déséquilibre de classes : beaucoup plus de crédits accordés que refusés dans la base de données</li>
             <li>Optimisation du seuil de décision par minimisation du coût métier</li>
-            <li>Interprétabilité globale et locale avec SHAP</li>
+            <li>Interprétabilité globale et locale du modèle avec SHAP</li>
           </ul>
         </div>
       </div>
@@ -471,7 +578,7 @@
         <span class="pipe-arrow">→</span>
         <span class="pipe-step">Optimisation seuil</span>
         <span class="pipe-arrow">→</span>
-        <span class="pipe-step">SHAP</span>
+        <span class="pipe-step">Interprétation modèle</span>
       </div>
 
       <!-- Model comparison -->
@@ -482,7 +589,6 @@
             <th>Modèle</th>
             <th>Score métier ↓</th>
             <th>AUC-ROC ↑</th>
-            <th>Gestion déséquilibre</th>
           </tr>
         </thead>
         <tbody>
@@ -490,31 +596,26 @@
             <td>Dummy Classifier</td>
             <td class="score">0.467</td>
             <td class="score">0.500</td>
-            <td>—</td>
           </tr>
           <tr>
             <td>Random Forest Classifier</td>
             <td class="score">0.332</td>
             <td class="score">0.724</td>
-            <td>class_weight balanced</td>
           </tr>
           <tr>
             <td>Régression Logistique</td>
             <td class="score">0.315</td>
             <td class="score">0.749</td>
-            <td>class_weight balanced</td>
           </tr>
           <tr>
             <td>XGBoost Classifier</td>
             <td class="score">0.313</td>
             <td class="score">0.751</td>
-            <td>scale_pos_weight</td>
           </tr>
           <tr class="best">
             <td>XGBoost + Feature Engineering <span class="best-badge">★ MEILLEUR</span></td>
             <td class="score good">0.303</td>
             <td class="score good">0.765</td>
-            <td>scale_pos_weight</td>
           </tr>
         </tbody>
       </table>
@@ -532,27 +633,17 @@
           <div class="result-value">0.765</div>
           <div class="result-sub">XGBoost + Feature Engineering</div>
         </div>
-        <div class="result-card">
-          <div class="result-label">Interprétabilité</div>
-          <div class="result-value" style="font-size:1rem;">SHAP</div>
-          <div class="result-sub">Globale + locale par client</div>
-        </div>
-        <div class="result-card">
-          <div class="result-label">Top features</div>
-          <div class="result-value" style="font-size:.85rem; line-height:1.3;">EXT_SOURCE_2&nbsp;/ EXT_SOURCE_3</div>
-          <div class="result-sub">+ variables FE (PAYMENT_RATE…)</div>
-        </div>
       </div>
 
       <!-- Interpretability note -->
       <div class="interp-box">
-        <p class="project-section-title" style="margin-bottom:.5rem;">Interprétabilité du modèle</p>
+        <p class="project-section-title" style="margin-bottom:.5rem;">Interprétabilité du modèle : utilisation de la librairie Python SHAP</p>
         <p class="project-desc">
-          <strong style="color:var(--text);">Globale</strong> : les variables les plus influentes sur l'ensemble du jeu de données sont <code>EXT_SOURCE_2</code>, <code>EXT_SOURCE_3</code> (scores externes), ainsi que des variables créées lors du feature engineering : <code>PAYMENT_RATE</code> (taux de remboursement), <code>INSTAL_DPD_MEAN</code> (retards moyens) et <code>INSTAL_DAYS_ENTRY_PAYMENT_MEAN</code>.
+          <strong style="color:var(--text);">Globale</strong> : les variables les plus influentes sur l'ensemble du jeu de données sont <code>EXT_SOURCE_2</code>, <code>EXT_SOURCE_3</code> (scores externes fournis dans le jeu de données), ainsi que des variables créées lors du feature engineering, telles que <code>PAYMENT_RATE</code> (taux de remboursement) et <code>INSTAL_DPD_MEAN</code> (retards moyens).
         </p>
         <br />
         <p class="project-desc">
-          <strong style="color:var(--text);">Locale</strong> : les valeurs SHAP permettent d'expliquer chaque prédiction individuelle — les variables en faveur du remboursement (classe 0) et celles signalant un risque de défaut (classe 1), comme <code>INSTALL_PAYMENT_DIFF_SUM</code> et <code>INSTALL_PAYMENT_DIFF_MAX</code>.
+          <strong style="color:var(--text);">Locale</strong> : les valeurs SHAP permettent d'expliquer chaque prédiction individuelle — les variables en faveur du remboursement (classe 0) et celles signalant un risque de défaut (classe 1).
         </p>
       </div>
 
@@ -577,6 +668,273 @@
     </div>
   </article>
 
+  <!-- ── Project 2: Image Classification ── -->
+  <article class="project-card">
+    <div class="project-header">
+      <div class="project-meta">
+        <span class="project-number">PROJET 02 · COMPUTER VISION & NLP </span>
+        <h3 class="project-title">Classification automatique d'articles e-commerce</h3>
+        <span class="project-context">Place de marché — Moteur de classification automatique par image et description texte</span>
+      </div>
+      <div class="project-badges">
+        <span class="badge badge-blue">NLP</span>
+        <span class="badge badge-purple">Computer Vision</span>
+        <span class="badge badge-green">Transfer Learning</span>
+        <span class="badge badge-orange">Clustering</span>
+      </div>
+    </div>
+
+    <div class="project-body">
+
+      <!-- Context + Approach -->
+      <div class="project-cols">
+        <div>
+          <p class="project-section-title">Contexte & Problématique</p>
+          <p class="project-desc">
+            Pour la marketplace e-commerce <em>Place de marché</em>, les catégories de produits sont attribuées manuellement par les vendeurs — source d'erreurs et frein au passage à l'échelle. L'objectif est d'étudier la <strong>faisabilité d'un moteur de classification automatique</strong> des articles à partir de leur image et de leur description texte, puis de développer un modèle supervisé.
+          </p>
+          <br />
+          <p class="project-desc">
+            Le dataset comprend <strong>7 catégories</strong> de produits : Watches, Computers, Home Furnishing, Kitchen & Dining, Beauty & Personal Care, Home Decor, Baby Care.
+          </p>
+        </div>
+        <div>
+          <p class="project-section-title">Démarche</p>
+          <ul class="steps">
+            <li><span>Prétraitement des descriptions texte et des images produits</span></li>
+            <li><span>Extraction de features texte : BoW, TF-IDF, Word2Vec, BERT, USE</span></li>
+            <li><span>Extraction de features image : descripteurs SIFT et CNN Transfer Learning (VGG16)</span></li>
+            <li><span>Réduction dimensionnelle PCA + t-SNE pour visualisation 2D</span></li>
+            <li><span>Clustering K-Means + calcul ARI pour évaluer la faisabilité</span></li>
+            <li><span>Classification supervisée par CNN : from scratch, Transfer Learning, + Data Augmentation</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Data samples -->
+      <p class="project-section-title">Présentation des données</p>
+      <div class="samples-grid">
+        <div class="sample-card">
+          <img src="images/sample_55b85ea15a1536d46b7190ad6fff8ce7.jpg" alt="Home Furnishing" onclick="openLightbox('images/sample_55b85ea15a1536d46b7190ad6fff8ce7.jpg')" />
+          <div class="sample-card-body">
+            <div class="sample-category">Home Furnishing</div>
+            <div class="sample-name">Elegance Polyester Eyelet Door Curtain</div>
+            <div class="sample-desc">Floral curtain made from 100% high quality polyester fabric with eyelet style metal ring.</div>
+          </div>
+        </div>
+        <div class="sample-card">
+          <img src="images/sample_7b72c92c2f6c40268628ec5f14c6d590.jpg" alt="Baby Care" onclick="openLightbox('images/sample_7b72c92c2f6c40268628ec5f14c6d590.jpg')" />
+          <div class="sample-card-body">
+            <div class="sample-category">Baby Care</div>
+            <div class="sample-name">Sathiyas Cotton Bath Towel</div>
+            <div class="sample-desc">Set of 3 cotton bath towels in Red, Yellow and Blue. Machine washable, 500 GSM.</div>
+          </div>
+        </div>
+        <div class="sample-card">
+          <img src="images/sample_893aa5ed55f7cff2eccea7758d7a86bd.jpg" alt="Watches" onclick="openLightbox('images/sample_893aa5ed55f7cff2eccea7758d7a86bd.jpg')" />
+          <div class="sample-card-body">
+            <div class="sample-category">Watches</div>
+            <div class="sample-name">Maserati Time R8851116001 Analog Watch</div>
+            <div class="sample-desc">Elegant analog watch for boys from Maserati Time with premium finishing.</div>
+          </div>
+        </div>
+        <div class="sample-card">
+          <img src="images/sample_kitchen.jpg" alt="Kitchen & Dining" onclick="openLightbox('images/sample_kitchen.jpg')" />
+          <div class="sample-card-body">
+            <div class="sample-category">Kitchen & Dining</div>
+            <div class="sample-name">AKUP i-loves-music Ceramic Mug</div>
+            <div class="sample-desc">Ceramic coffee mug with music-themed design. Ideal gift for music lovers.</div>
+          </div>
+        </div>
+        <div class="sample-card">
+          <img src="images/sample_2d50e4c6ccf8befe9335ac8f97a11712.jpg" alt="Beauty & Personal Care" onclick="openLightbox('images/sample_2d50e4c6ccf8befe9335ac8f97a11712.jpg')" />
+          <div class="sample-card-body">
+            <div class="sample-category">Beauty & Personal Care</div>
+            <div class="sample-name">Burt's Bees Shea & Grapefruit Conditioner</div>
+            <div class="sample-desc">Deep conditioner with shea butter and grapefruit. Nourishing formula for all hair types.</div>
+          </div>
+        </div>
+        <div class="sample-card">
+          <img src="images/sample_d1899ab1d5c79ddaa311bc9f04d198ed.jpg" alt="Computers" onclick="openLightbox('images/sample_d1899ab1d5c79ddaa311bc9f04d198ed.jpg')" />
+          <div class="sample-card-body">
+            <div class="sample-category">Computers</div>
+            <div class="sample-name">D-Link DAP1320 Wireless Range Extender</div>
+            <div class="sample-desc">QRS app compatible (iOS/Android). Extends Wi-Fi coverage with single-band speed.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pipeline -->
+      <p class="project-section-title">Pipeline</p>
+      <div class="pipeline">
+        <span class="pipe-step">Prétraitement</span>
+        <span class="pipe-arrow">→</span>
+        <span class="pipe-step">Feature Extraction (texte + image)</span>
+        <span class="pipe-arrow">→</span>
+        <span class="pipe-step">PCA + t-SNE</span>
+        <span class="pipe-arrow">→</span>
+        <span class="pipe-step">K-Means + ARI</span>
+        <span class="pipe-arrow">→</span>
+        <span class="pipe-step">CNN supervisé</span>
+        <span class="pipe-arrow">→</span>
+        <span class="pipe-step">Data Augmentation</span>
+      </div>
+
+      <!-- Two tables side by side -->
+      <div class="project-cols">
+        <div>
+          <p class="project-section-title">Faisabilité — Scores ARI (texte)</p>
+          <table class="model-table">
+            <thead>
+              <tr>
+                <th>Méthode</th>
+                <th>ARI ↑</th>
+                <th>Faisable ?</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="best">
+                <td>TF-IDF <span class="best-badge">★ MEILLEUR</span></td>
+                <td class="score good">0.45</td>
+                <td style="color:var(--accent2); font-weight:600;">✓ Oui</td>
+              </tr>
+              <tr>
+                <td>Bag-of-Words</td>
+                <td class="score">0.43</td>
+                <td style="color:var(--accent2); font-weight:600;">✓ Oui</td>
+              </tr>
+              <tr>
+                <td>USE</td>
+                <td class="score">0.43</td>
+                <td style="color:var(--accent2); font-weight:600;">✓ Oui</td>
+              </tr>
+              <tr>
+                <td>BERT</td>
+                <td class="score">0.32</td>
+                <td style="color:var(--accent3);">✗ Non</td>
+              </tr>
+              <tr>
+                <td>Word2Vec</td>
+                <td class="score">0.21</td>
+                <td style="color:var(--accent3);">✗ Non</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <p class="project-section-title">Faisabilité — Scores ARI (image)</p>
+          <table class="model-table">
+            <thead>
+              <tr>
+                <th>Méthode</th>
+                <th>ARI ↑</th>
+                <th>Faisable ?</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="best">
+                <td>CNN Transfer Learning (VGG16) <span class="best-badge">★ MEILLEUR</span></td>
+                <td class="score good">0.39</td>
+                <td style="color:var(--accent2); font-weight:600;">✓ Oui</td>
+              </tr>
+              <tr>
+                <td>Descripteurs SIFT</td>
+                <td class="score">0.06</td>
+                <td style="color:var(--accent3);">✗ Non</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p class="project-section-title" style="margin-top:1.5rem;">Classification supervisée (CNN)</p>
+          <table class="model-table">
+            <thead>
+              <tr>
+                <th>Modèle</th>
+                <th>Accuracy test ↑</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>CNN from scratch</td>
+                <td class="score">0.51 (Overfitting)</td>
+              </tr>
+              <tr>
+                <td>CNN + Transfer Learning</td>
+                <td class="score">Overfitting</td>
+              </tr>
+              <tr class="best">
+                <td>CNN + TL + Data Augmentation <span class="best-badge">★ MEILLEUR</span></td>
+                <td class="score good">78%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Key results -->
+      <p class="project-section-title">Résultats clés</p>
+      <div class="results-grid">
+        <div class="result-card">
+          <div class="result-label">Meilleur ARI texte</div>
+          <div class="result-value">0.45</div>
+          <div class="result-sub">TF-IDF (seuil faisabilité ≥ 0.4)</div>
+        </div>
+        <div class="result-card">
+          <div class="result-label">Accuracy image</div>
+          <div class="result-value">80%</div>
+          <div class="result-sub">CNN + Transfer Learning + Data Aug.</div>
+        </div>
+        <div class="result-card">
+          <div class="result-label">Modèle image</div>
+          <div class="result-value" style="font-size:1rem;">VGG16</div>
+          <div class="result-sub">Pré-entraîné ImageNet</div>
+        </div>
+        <div class="result-card">
+          <div class="result-label">Catégories</div>
+          <div class="result-value">7</div>
+          <div class="result-sub">Dataset Flipkart e-commerce</div>
+        </div>
+      </div>
+
+      <!-- Visuals -->
+      <p class="project-section-title">Visuels</p>
+      <div class="project-cols" style="margin-bottom:2rem;">
+        <div>
+          <p style="font-family:var(--mono);font-size:.72rem;color:var(--text-muted);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.08em;">Clustering t-SNE — TF-IDF (ARI = 0.45)</p>
+          <a class="lightbox-trigger" onclick="openLightbox('images/proj6_tsne_tfidf.jpg')">
+            <img src="images/proj6_tsne_tfidf.jpg" alt="Visualisation t-SNE TF-IDF" style="border-radius:8px;border:1px solid var(--border);" />
+          </a>
+        </div>
+        <div>
+          <p style="font-family:var(--mono);font-size:.72rem;color:var(--text-muted);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.08em;">Matrice de confusion — CNN + Transfer Learning + Data Augmentation</p>
+          <a class="lightbox-trigger" onclick="openLightbox('images/proj6_confusion_matrix.jpg')">
+            <img src="images/proj6_confusion_matrix.jpg" alt="Matrice de confusion CNN TL DA" style="border-radius:8px;border:1px solid var(--border);" />
+          </a>
+        </div>
+      </div>
+
+      <!-- Tech stack -->
+      <div class="tech-stack">
+        <span class="tech-tag">Python</span>
+        <span class="tech-tag">TensorFlow / Keras</span>
+        <span class="tech-tag">VGG16</span>
+        <span class="tech-tag">BERT</span>
+        <span class="tech-tag">USE</span>
+        <span class="tech-tag">Word2Vec</span>
+        <span class="tech-tag">TF-IDF</span>
+        <span class="tech-tag">SIFT</span>
+        <span class="tech-tag">t-SNE</span>
+        <span class="tech-tag">K-Means</span>
+        <span class="tech-tag">Data Augmentation</span>
+        <span class="tech-tag">scikit-learn</span>
+        <span class="tech-tag">NLTK</span>
+        <span class="tech-tag">OpenCV</span>
+        <span class="tech-tag">Jupyter Notebook</span>
+      </div>
+
+    </div>
+  </article>
+
   <!-- Placeholder for future projects -->
   <div style="border:1px dashed var(--border); border-radius:16px; padding:3rem 2rem; text-align:center; color:var(--text-muted);">
     <p style="font-family:var(--mono); font-size:.85rem;">// Projets suivants à venir</p>
@@ -589,5 +947,18 @@
   <p>Nicolas Godinaud · nicolas.godinaud@gmail.com </p>
 </footer>
 
+<script>
+  function openLightbox(src) {
+    document.getElementById('lightbox-img').src = src;
+    document.getElementById('lightbox').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.getElementById('lightbox').addEventListener('click', closeLightbox);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+</script>
 </body>
 </html>

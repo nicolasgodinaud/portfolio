@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projet 02 — Classification automatique d'articles e-commerce</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #ffffff; --bg2: #f8fafc; --bg3: #f1f5f9;
+      --border: #e2e8f0; --accent: #2563eb; --accent-light: #eff6ff;
+      --accent2: #16a34a; --accent3: #dc2626;
+      --text: #0f172a; --text-muted: #64748b;
+      --font: 'Inter', 'Segoe UI', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 16px; line-height: 1.6; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2.5rem; height: 60px;
+      background: rgba(255,255,255,.92); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    }
+    .nav-logo { font-family: var(--mono); font-size: .95rem; color: var(--accent); letter-spacing: .02em; }
+    .nav-links { display: flex; gap: 2rem; }
+    .nav-links a { font-size: .875rem; color: var(--text-muted); transition: color .2s; }
+    .nav-links a:hover { color: var(--text); text-decoration: none; }
+
+    .page-wrapper { max-width: 1100px; margin: 0 auto; padding: 5rem 2rem 4rem; }
+    .back-link { display: inline-flex; align-items: center; gap: .4rem; font-family: var(--mono); font-size: .78rem; color: var(--text-muted); margin-bottom: 2rem; transition: color .2s; }
+    .back-link:hover { color: var(--accent); text-decoration: none; }
+
+    .project-card { background: var(--bg); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,.05); }
+    .project-header { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 1rem; padding: 2rem 2rem 1.5rem; border-bottom: 1px solid var(--border); }
+    .project-meta { display: flex; flex-direction: column; gap: .4rem; }
+    .project-number { font-family: var(--mono); font-size: .75rem; color: var(--accent); letter-spacing: .1em; }
+    .project-title { font-size: 1.4rem; font-weight: 700; line-height: 1.2; }
+    .project-context { font-size: .85rem; color: var(--text-muted); font-style: italic; }
+    .project-badges { display: flex; flex-wrap: wrap; gap: .5rem; align-items: flex-start; }
+    .badge { font-family: var(--mono); font-size: .72rem; font-weight: 500; padding: .25rem .65rem; border-radius: 6px; }
+    .badge-blue   { background: #eff6ff; color: #1d4ed8; }
+    .badge-green  { background: #f0fdf4; color: #15803d; }
+    .badge-orange { background: #fffbeb; color: #b45309; }
+    .badge-purple { background: #f5f3ff; color: #6d28d9; }
+
+    .project-body { padding: 2rem; }
+    .project-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem; }
+    @media (max-width: 720px) { .project-cols { grid-template-columns: 1fr; } }
+
+    .project-section-title { font-family: var(--mono); font-size: .75rem; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-bottom: .75rem; }
+    .project-desc { font-size: .9rem; color: var(--text-muted); line-height: 1.7; }
+
+    .steps { list-style: none; display: flex; flex-direction: column; gap: .6rem; }
+    .steps li { display: flex; align-items: flex-start; gap: .6rem; font-size: .875rem; color: var(--text-muted); }
+    .steps li::before { content: '▸'; color: var(--accent); flex-shrink: 0; margin-top: .05rem; }
+
+    .results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .result-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.25rem; }
+    .result-label { font-family: var(--mono); font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: .35rem; }
+    .result-value { font-size: 1.3rem; font-weight: 700; color: var(--accent2); }
+    .result-sub { font-size: .75rem; color: var(--text-muted); margin-top: .2rem; }
+
+    .tech-stack { display: flex; flex-wrap: wrap; gap: .6rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+    .tech-tag { font-family: var(--mono); font-size: .78rem; padding: .3rem .8rem; border-radius: 6px; border: 1px solid var(--border); color: var(--text-muted); background: var(--bg3); }
+
+    .pipeline { display: flex; align-items: center; flex-wrap: wrap; gap: .5rem; padding: 1.25rem; background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 1.5rem; }
+    .pipe-step { font-family: var(--mono); font-size: .75rem; padding: .3rem .7rem; border-radius: 6px; background: #ffffff; border: 1px solid var(--border); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+    .pipe-arrow { color: var(--accent); font-size: .9rem; flex-shrink: 0; }
+
+    .model-table { width: 100%; border-collapse: collapse; font-size: .85rem; margin-bottom: 1.5rem; }
+    .model-table th { font-family: var(--mono); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); text-align: left; padding: .6rem 1rem; border-bottom: 1px solid var(--border); }
+    .model-table td { padding: .65rem 1rem; border-bottom: 1px solid rgba(48,54,61,.5); color: var(--text-muted); }
+    .model-table tr:last-child td { border-bottom: none; }
+    .model-table tr.best td { color: var(--text); }
+    .model-table tr.best td:first-child { color: var(--accent2); font-weight: 600; }
+    .model-table .score { font-family: var(--mono); }
+    .model-table .good  { color: var(--accent2); font-weight: 600; }
+    .model-table .best-badge { display: inline-block; font-size: .65rem; font-family: var(--mono); padding: .15rem .45rem; border-radius: 4px; background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; margin-left: .5rem; vertical-align: middle; }
+
+    .samples-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .sample-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; transition: box-shadow .2s, border-color .2s; }
+    .sample-card:hover { border-color: var(--accent); box-shadow: 0 4px 16px rgba(37,99,235,.08); }
+    .sample-card img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; cursor: zoom-in; }
+    .sample-card-body { padding: .6rem .75rem .75rem; }
+    .sample-category { font-family: var(--mono); font-size: .65rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--accent); margin-bottom: .3rem; }
+    .sample-name { font-size: .78rem; font-weight: 600; color: var(--text); margin-bottom: .3rem; line-height: 1.3; }
+    .sample-desc { font-size: .72rem; color: var(--text-muted); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+    .lightbox-trigger { cursor: zoom-in; display: block; position: relative; }
+    .lightbox-trigger::after { content: '⤢'; position: absolute; bottom: .5rem; right: .5rem; background: rgba(255,255,255,.85); color: var(--accent); font-size: .8rem; padding: .2rem .4rem; border-radius: 4px; opacity: 0; transition: opacity .2s; pointer-events: none; }
+    .lightbox-trigger:hover::after { opacity: 1; }
+    .lightbox-trigger img { display: block; width: 100%; }
+
+    #lightbox { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,.75); backdrop-filter: blur(4px); align-items: center; justify-content: center; cursor: zoom-out; }
+    #lightbox.open { display: flex; }
+    #lightbox img { max-width: 90vw; max-height: 90vh; border-radius: 10px; box-shadow: 0 20px 60px rgba(0,0,0,.4); cursor: default; }
+    #lightbox-close { position: fixed; top: 1.25rem; right: 1.5rem; color: white; font-size: 1.75rem; line-height: 1; cursor: pointer; opacity: .8; transition: opacity .2s; background: none; border: none; }
+    #lightbox-close:hover { opacity: 1; }
+
+    footer { border-top: 1px solid var(--border); text-align: center; padding: 2.5rem; font-size: .825rem; color: var(--text-muted); font-family: var(--mono); background: var(--bg2); }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg2); }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<div id="lightbox">
+  <button id="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation()" />
+</div>
+
+<nav>
+  <a class="nav-logo" href="index.html">ng.portfolio</a>
+  <div class="nav-links">
+    <a href="index.html">Projets</a>
+    <a href="mailto:nicolas.godinaud@gmail.com">Contact</a>
+  </div>
+</nav>
+
+<div class="page-wrapper">
+
+  <a class="back-link" href="index.html">← Retour au portfolio</a>
+
+  <article class="project-card">
+    <div class="project-header">
+      <div class="project-meta">
+        <span class="project-number">PROJET 02 · COMPUTER VISION & NLP</span>
+        <h1 class="project-title">Classification automatique d'images d'articles e-commerce</h1>
+        <span class="project-context">Moteur de classification automatique par image et description texte</span>
+      </div>
+      <div class="project-badges">
+        <span class="badge badge-blue">NLP</span>
+        <span class="badge badge-purple">Computer Vision</span>
+        <span class="badge badge-green">Transfer Learning</span>
+        <span class="badge badge-orange">Clustering</span>
+      </div>
+    </div>
+
+    <div class="project-body">
+
+      <div class="project-cols">
+        <div>
+          <p class="project-section-title">Contexte & Problématique</p>
+          <p class="project-desc">
+            Dans ce projet, on travaille pour une marketplace e-commerce fictive, sur laquelle les catégories de produits étaient jusqu'alors attribuées manuellement par les vendeurs — source d'erreurs et frein au passage à l'échelle. L'objectif est d'étudier la <strong>faisabilité d'un moteur de classification automatique</strong> des articles à partir de leur image et de leur description texte, puis de développer un <strong>modèle supervisé de classification d'images</strong>.
+          </p>
+          <br />
+          <p class="project-desc">
+            Le dataset comprend 906 produits, répartis en <strong>7 catégories</strong> : Watches, Computers, Home Furnishing, Kitchen & Dining, Beauty & Personal Care, Home Decor, Baby Care.
+          </p>
+        </div>
+        <div>
+          <p class="project-section-title">Démarche</p>
+          <ul class="steps">
+            <li><span>Prétraitement des descriptions texte et des images produits</span></li>
+            <li><span>Extraction de features texte : BoW, TF-IDF, Word2Vec, BERT, USE</span></li>
+            <li><span>Extraction de features image : descripteurs SIFT et CNN Transfer Learning (VGG16)</span></li>
+            <li><span>Réduction dimensionnelle PCA + t-SNE pour visualisation 2D</span></li>
+            <li><span>Clustering K-Means + calcul ARI pour évaluer la faisabilité</span></li>
+            <li><span>Classification supervisée par CNN : from scratch, Transfer Learning, + Data Augmentation</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <p class="project-section-title">Présentation des données</p>
+      <p class="project-desc">
+        Voici un exemple de 5 produits présents parmi les données, avec leur catégorie respective, leur image et leur description texte.
+      </p>
+      <br />
+      <div class="samples-grid">
+        <div class="sample-card">
+          <img src="images/sample_55b85ea15a1536d46b7190ad6fff8ce7.jpg" alt="Home Furnishing" onclick="openLightbox('images/sample_55b85ea15a1536d46b7190ad6fff8ce7.jpg')" />
+          <div class="sample-card-body">
+            <div class="sample-category">Home Furnishing</div>
+            <div class="sample-name">Elegance Polyester Eyelet Door Curtain</div>
+            <div class="sample-desc">Floral curtain made from 100% high quality polyester fabric with eyelet style metal ring.</div>
+          </div>
+        </div>
+        <div class="sample-card">
+          <img src="images/sample_893aa5ed55f7cff2eccea7758d7a86bd.jpg" alt="Watches" onclick="openLightbox('images/sample_893aa5ed55f7cff2eccea7758d7a86bd.jpg')" />
+          <div class="sample-card-body">
+            <div class="sample-category">Watches</div>
+            <div class="sample-name">Maserati Time R8851116001 Analog Watch</div>
+            <div class="sample-desc">Elegant analog watch for boys from Maserati Time with premium finishing.</div>
+          </div>
+        </div>
+        <div class="sample-card">
+          <img src="images/sample_kitchen.jpg" alt="Kitchen & Dining" onclick="openLightbox('images/sample_kitchen.jpg')" />
+          <div class="sample-card-body">
+            <div class="sample-category">Kitchen & Dining</div>
+            <div class="sample-name">AKUP i-loves-music Ceramic Mug</div>
+            <div class="sample-desc">Ceramic coffee mug with music-themed design. Ideal gift for music lovers.</div>
+          </div>
+        </div>
+        <div class="sample-card">
+          <img src="images/sample_2d50e4c6ccf8befe9335ac8f97a11712.jpg" alt="Beauty & Personal Care" onclick="openLightbox('images/sample_2d50e4c6ccf8befe9335ac8f97a11712.jpg')" />
+          <div class="sample-card-body">
+            <div class="sample-category">Beauty & Personal Care</div>
+            <div class="sample-name">Burt's Bees Shea & Grapefruit Conditioner</div>
+            <div class="sample-desc">Deep conditioner with shea butter and grapefruit. Nourishing formula for all hair types.</div>
+          </div>
+        </div>
+        <div class="sample-card">
+          <img src="images/sample_d1899ab1d5c79ddaa311bc9f04d198ed.jpg" alt="Computers" onclick="openLightbox('images/sample_d1899ab1d5c79ddaa311bc9f04d198ed.jpg')" />
+          <div class="sample-card-body">
+            <div class="sample-category">Computers</div>
+            <div class="sample-name">D-Link DAP1320 Wireless Range Extender</div>
+            <div class="sample-desc">QRS app compatible (iOS/Android). Extends Wi-Fi coverage with single-band speed.</div>
+          </div>
+        </div>
+      </div>
+
+      <p class="project-section-title">Pipeline</p>
+      <div class="pipeline">
+        <span class="pipe-step">Prétraitement</span><span class="pipe-arrow">→</span>
+        <span class="pipe-step">Feature Extraction (texte + image)</span><span class="pipe-arrow">→</span>
+        <span class="pipe-step">PCA + t-SNE</span><span class="pipe-arrow">→</span>
+        <span class="pipe-step">K-Means + ARI</span><span class="pipe-arrow">→</span>
+        <span class="pipe-step">CNN supervisé</span><span class="pipe-arrow">→</span>
+        <span class="pipe-step">Data Augmentation</span>
+      </div>
+
+      <div class="project-cols">
+        <div>
+          <p class="project-section-title">Faisabilité — Scores ARI (texte)</p>
+          <table class="model-table">
+            <thead><tr><th>Méthode</th><th>ARI ↑</th><th>Faisable ?</th></tr></thead>
+            <tbody>
+              <tr class="best"><td>TF-IDF <span class="best-badge">★ MEILLEUR</span></td><td class="score good">0.45</td><td style="color:var(--accent2);font-weight:600;">✓ Oui</td></tr>
+              <tr><td>Bag-of-Words</td><td class="score">0.43</td><td style="color:var(--accent2);font-weight:600;">✓ Oui</td></tr>
+              <tr><td>USE</td><td class="score">0.43</td><td style="color:var(--accent2);font-weight:600;">✓ Oui</td></tr>
+              <tr><td>BERT</td><td class="score">0.32</td><td style="color:var(--accent3);">✗ Non</td></tr>
+              <tr><td>Word2Vec</td><td class="score">0.21</td><td style="color:var(--accent3);">✗ Non</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <p class="project-section-title">Faisabilité — Scores ARI (image)</p>
+          <table class="model-table">
+            <thead><tr><th>Méthode</th><th>ARI ↑</th><th>Faisable ?</th></tr></thead>
+            <tbody>
+              <tr class="best"><td>CNN Transfer Learning (VGG16) <span class="best-badge">★ MEILLEUR</span></td><td class="score good">0.39</td><td style="color:var(--accent2);font-weight:600;">✓ Oui</td></tr>
+              <tr><td>Descripteurs SIFT</td><td class="score">0.06</td><td style="color:var(--accent3);">✗ Non</td></tr>
+            </tbody>
+          </table>
+
+          <p class="project-section-title" style="margin-top:1.5rem;">Classification supervisée (CNN)</p>
+          <table class="model-table">
+            <thead><tr><th>Modèle</th><th>Accuracy test ↑</th></tr></thead>
+            <tbody>
+              <tr><td>CNN from scratch</td><td class="score">0.51 (Overfitting)</td></tr>
+              <tr><td>CNN + Transfer Learning</td><td class="score">Overfitting</td></tr>
+              <tr class="best"><td>CNN + TL + Data Augmentation <span class="best-badge">★ MEILLEUR</span></td><td class="score good">78%</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <p class="project-section-title">Résultats clés</p>
+      <div class="results-grid">
+        <div class="result-card">
+          <div class="result-label">Meilleur ARI texte</div>
+          <div class="result-value">0.45</div>
+          <div class="result-sub">TF-IDF (seuil faisabilité ≥ 0.4)</div>
+        </div>
+        <div class="result-card">
+          <div class="result-label">Accuracy image</div>
+          <div class="result-value">0.78</div>
+          <div class="result-sub">CNN + Transfer Learning + Data Aug.</div>
+        </div>
+        <div class="result-card">
+          <div class="result-label">Modèle image</div>
+          <div class="result-value" style="font-size:1rem;">VGG16</div>
+          <div class="result-sub">Pré-entraîné ImageNet</div>
+        </div>
+        <div class="result-card">
+          <div class="result-label">Catégories</div>
+          <div class="result-value">7</div>
+          <div class="result-sub">Dataset Flipkart e-commerce</div>
+        </div>
+      </div>
+
+      <p class="project-section-title">Visuels</p>
+      <div class="project-cols" style="margin-bottom:2rem;">
+        <div>
+          <p style="font-family:var(--mono);font-size:.72rem;color:var(--text-muted);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.08em;">Représentation 2D (t-SNE) des features textes extraites (TF-IDF)</p>
+          <a class="lightbox-trigger" onclick="openLightbox('images/proj6_tsne_tfidf.jpg')">
+            <img src="images/proj6_tsne_tfidf.jpg" alt="Visualisation t-SNE TF-IDF" style="border-radius:8px;border:1px solid var(--border);" />
+          </a>
+        </div>
+        <div>
+          <p style="font-family:var(--mono);font-size:.72rem;color:var(--text-muted);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.08em;">Résultats : classification sur un ensemble de 224 images de test</p>
+          <a class="lightbox-trigger" onclick="openLightbox('images/proj6_confusion_matrix.jpg')">
+            <img src="images/proj6_confusion_matrix.jpg" alt="Matrice de confusion CNN TL DA" style="border-radius:8px;border:1px solid var(--border);" />
+          </a>
+        </div>
+      </div>
+
+      <div class="tech-stack">
+        <span class="tech-tag">Python</span>
+        <span class="tech-tag">TensorFlow / Keras</span>
+        <span class="tech-tag">VGG16</span>
+        <span class="tech-tag">BERT</span>
+        <span class="tech-tag">USE</span>
+        <span class="tech-tag">Word2Vec</span>
+        <span class="tech-tag">TF-IDF</span>
+        <span class="tech-tag">SIFT</span>
+        <span class="tech-tag">t-SNE</span>
+        <span class="tech-tag">K-Means</span>
+        <span class="tech-tag">Data Augmentation</span>
+        <span class="tech-tag">scikit-learn</span>
+        <span class="tech-tag">NLTK</span>
+        <span class="tech-tag">OpenCV</span>
+        <span class="tech-tag">Jupyter Notebook</span>
+      </div>
+
+    </div>
+  </article>
+
+</div>
+
+<footer>
+  <p>Nicolas Godinaud · nicolas.godinaud@gmail.com</p>
+</footer>
+
+<script>
+  function openLightbox(src) { document.getElementById('lightbox-img').src = src; document.getElementById('lightbox').classList.add('open'); document.body.style.overflow = 'hidden'; }
+  function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); document.body.style.overflow = ''; }
+  document.getElementById('lightbox').addEventListener('click', closeLightbox);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+</script>
+</body>
+</html>

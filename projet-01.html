@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projet 01 — Modèle de scoring crédit</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #ffffff; --bg2: #f8fafc; --bg3: #f1f5f9;
+      --border: #e2e8f0; --accent: #2563eb; --accent-light: #eff6ff;
+      --accent2: #16a34a; --accent3: #dc2626;
+      --text: #0f172a; --text-muted: #64748b;
+      --font: 'Inter', 'Segoe UI', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 16px; line-height: 1.6; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2.5rem; height: 60px;
+      background: rgba(255,255,255,.92); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    }
+    .nav-logo { font-family: var(--mono); font-size: .95rem; color: var(--accent); letter-spacing: .02em; }
+    .nav-links { display: flex; gap: 2rem; }
+    .nav-links a { font-size: .875rem; color: var(--text-muted); transition: color .2s; }
+    .nav-links a:hover { color: var(--text); text-decoration: none; }
+
+    .page-wrapper { max-width: 1100px; margin: 0 auto; padding: 5rem 2rem 4rem; }
+
+    .back-link {
+      display: inline-flex; align-items: center; gap: .4rem;
+      font-family: var(--mono); font-size: .78rem; color: var(--text-muted);
+      margin-bottom: 2rem; transition: color .2s;
+    }
+    .back-link:hover { color: var(--accent); text-decoration: none; }
+
+    .project-card { background: var(--bg); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,.05); }
+    .project-header {
+      display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap;
+      gap: 1rem; padding: 2rem 2rem 1.5rem; border-bottom: 1px solid var(--border);
+    }
+    .project-meta { display: flex; flex-direction: column; gap: .4rem; }
+    .project-number { font-family: var(--mono); font-size: .75rem; color: var(--accent); letter-spacing: .1em; }
+    .project-title { font-size: 1.4rem; font-weight: 700; line-height: 1.2; }
+    .project-context { font-size: .85rem; color: var(--text-muted); font-style: italic; }
+    .project-badges { display: flex; flex-wrap: wrap; gap: .5rem; align-items: flex-start; }
+    .badge { font-family: var(--mono); font-size: .72rem; font-weight: 500; padding: .25rem .65rem; border-radius: 6px; }
+    .badge-blue   { background: #eff6ff; color: #1d4ed8; }
+    .badge-green  { background: #f0fdf4; color: #15803d; }
+    .badge-orange { background: #fffbeb; color: #b45309; }
+    .badge-purple { background: #f5f3ff; color: #6d28d9; }
+    .badge-red    { background: #fef2f2; color: #b91c1c; }
+
+    .project-body { padding: 2rem; }
+    .project-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem; }
+    @media (max-width: 720px) { .project-cols { grid-template-columns: 1fr; } }
+
+    .project-section-title { font-family: var(--mono); font-size: .75rem; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-bottom: .75rem; }
+    .project-desc { font-size: .9rem; color: var(--text-muted); line-height: 1.7; }
+
+    .steps { list-style: none; display: flex; flex-direction: column; gap: .6rem; }
+    .steps li { display: flex; align-items: flex-start; gap: .6rem; font-size: .875rem; color: var(--text-muted); }
+    .steps li::before { content: '▸'; color: var(--accent); flex-shrink: 0; margin-top: .05rem; }
+
+    .results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .result-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.25rem; }
+    .result-label { font-family: var(--mono); font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: .35rem; }
+    .result-value { font-size: 1.3rem; font-weight: 700; color: var(--accent2); }
+    .result-sub { font-size: .75rem; color: var(--text-muted); margin-top: .2rem; }
+
+    .tech-stack { display: flex; flex-wrap: wrap; gap: .6rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+    .tech-tag { font-family: var(--mono); font-size: .78rem; padding: .3rem .8rem; border-radius: 6px; border: 1px solid var(--border); color: var(--text-muted); background: var(--bg3); }
+
+    .pipeline { display: flex; align-items: center; flex-wrap: wrap; gap: .5rem; padding: 1.25rem; background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 1.5rem; }
+    .pipe-step { font-family: var(--mono); font-size: .75rem; padding: .3rem .7rem; border-radius: 6px; background: #ffffff; border: 1px solid var(--border); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+    .pipe-arrow { color: var(--accent); font-size: .9rem; flex-shrink: 0; }
+
+    .model-table { width: 100%; border-collapse: collapse; font-size: .85rem; margin-bottom: 1.5rem; }
+    .model-table th { font-family: var(--mono); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); text-align: left; padding: .6rem 1rem; border-bottom: 1px solid var(--border); }
+    .model-table td { padding: .65rem 1rem; border-bottom: 1px solid rgba(48,54,61,.5); color: var(--text-muted); }
+    .model-table tr:last-child td { border-bottom: none; }
+    .model-table tr.best td { color: var(--text); }
+    .model-table tr.best td:first-child { color: var(--accent2); font-weight: 600; }
+    .model-table .score { font-family: var(--mono); }
+    .model-table .good  { color: var(--accent2); font-weight: 600; }
+    .model-table .best-badge { display: inline-block; font-size: .65rem; font-family: var(--mono); padding: .15rem .45rem; border-radius: 4px; background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; margin-left: .5rem; vertical-align: middle; }
+
+    .interp-box { background: var(--bg2); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 1.25rem; margin-bottom: 1.5rem; }
+
+    footer { border-top: 1px solid var(--border); text-align: center; padding: 2.5rem; font-size: .825rem; color: var(--text-muted); font-family: var(--mono); background: var(--bg2); }
+    #lightbox { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,.75); backdrop-filter: blur(4px); align-items: center; justify-content: center; cursor: zoom-out; }
+    #lightbox.open { display: flex; }
+    #lightbox img { max-width: 90vw; max-height: 90vh; border-radius: 10px; box-shadow: 0 20px 60px rgba(0,0,0,.4); cursor: default; }
+    #lightbox-close { position: fixed; top: 1.25rem; right: 1.5rem; color: white; font-size: 1.75rem; line-height: 1; cursor: pointer; opacity: .8; transition: opacity .2s; background: none; border: none; }
+    #lightbox-close:hover { opacity: 1; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg2); }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<div id="lightbox">
+  <button id="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation()" />
+</div>
+
+<nav>
+  <a class="nav-logo" href="index.html">ng.portfolio</a>
+  <div class="nav-links">
+    <a href="index.html">Projets</a>
+    <a href="mailto:nicolas.godinaud@gmail.com">Contact</a>
+  </div>
+</nav>
+
+<div class="page-wrapper">
+
+  <a class="back-link" href="index.html">← Retour au portfolio</a>
+
+  <article class="project-card">
+    <div class="project-header">
+      <div class="project-meta">
+        <span class="project-number">PROJET 01 · MACHINE LEARNING SUPERVISÉ</span>
+        <h1 class="project-title">Modèle de scoring crédit</h1>
+        <span class="project-context">Algorithmes de classification pour l'octroi de crédits à la consommation</span>
+        <div class="project-badges">
+          <span class="badge badge-blue">Classification binaire</span>
+          <span class="badge badge-green">Feature Engineering</span>
+          <span class="badge badge-orange">SHAP</span>
+          <span class="badge badge-purple">Optimisation métier</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-body">
+
+      <div class="project-cols">
+        <div>
+          <p class="project-section-title">Contexte & Problématique</p>
+          <p class="project-desc">
+            Au cours de ce projet, on se positionne en tant que Data Scientist travaillant pour une société financière fictive. L'objectif est de concevoir un outil de <strong>scoring crédit</strong> capable de calculer la probabilité de remboursement d'un client et de classifier automatiquement les demandes (crédit accordé / refusé).
+          </p>
+          <br />
+          <p class="project-desc">
+            Le modèle doit être facilement <strong>interprétable</strong> pour les chargés de relation client, et tenir compte d'un <strong>déséquilibre de coût métier</strong> : un faux négatif (crédit accordé à un mauvais payeur) est 10× plus coûteux qu'un faux positif (bon client refusé).
+          </p>
+        </div>
+        <div>
+          <p class="project-section-title">Démarche</p>
+          <ul class="steps">
+            <li><span>Analyse exploratoire du dataset <a href="https://www.kaggle.com/competitions/home-credit-default-risk/data" target="_blank">Home Credit Default Risk</a> : outliers, valeurs manquantes, distributions</span></li>
+            <li>Feature engineering : création de nouvelles variables pertinentes (taux de paiement, retards moyens, etc.)</li>
+            <li>Conception d'un score métier pénalisant les faux négatifs (×10). Objectif des modèles : minimiser le score métier</li>
+            <li>Benchmark de 5 modèles avec pipelines scikit-learn, Cross-Validation 5-folds et GridSearchCV</li>
+            <li>Gestion du déséquilibre de classes : beaucoup plus de crédits accordés que refusés dans la base de données</li>
+            <li>Optimisation du seuil de décision par minimisation du coût métier</li>
+            <li>Interprétabilité globale et locale du modèle avec SHAP</li>
+          </ul>
+        </div>
+      </div>
+
+      <p class="project-section-title">Pipeline de modélisation</p>
+      <div class="pipeline">
+        <span class="pipe-step">EDA</span><span class="pipe-arrow">→</span>
+        <span class="pipe-step">Feature Engineering</span><span class="pipe-arrow">→</span>
+        <span class="pipe-step">Preprocessing</span><span class="pipe-arrow">→</span>
+        <span class="pipe-step">Rééquilibrage classes</span><span class="pipe-arrow">→</span>
+        <span class="pipe-step">GridSearchCV (5-folds)</span><span class="pipe-arrow">→</span>
+        <span class="pipe-step">Optimisation seuil</span><span class="pipe-arrow">→</span>
+        <span class="pipe-step">Interprétation modèle</span>
+      </div>
+
+      <p class="project-section-title">Comparaison des modèles</p>
+      <table class="model-table">
+        <thead>
+          <tr><th>Modèle</th><th>Score métier ↓</th><th>AUC-ROC ↑</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Dummy Classifier</td><td class="score">0.467</td><td class="score">0.500</td></tr>
+          <tr><td>Random Forest Classifier</td><td class="score">0.332</td><td class="score">0.724</td></tr>
+          <tr><td>Régression Logistique</td><td class="score">0.315</td><td class="score">0.749</td></tr>
+          <tr><td>XGBoost Classifier</td><td class="score">0.313</td><td class="score">0.751</td></tr>
+          <tr class="best">
+            <td>XGBoost + Feature Engineering <span class="best-badge">★ MEILLEUR</span></td>
+            <td class="score good">0.303</td><td class="score good">0.765</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="project-section-title">Résultats clés</p>
+      <div class="results-grid">
+        <div class="result-card">
+          <div class="result-label">Score métier</div>
+          <div class="result-value">0.303</div>
+          <div class="result-sub">XGBoost + FE (vs 0.467 baseline)</div>
+        </div>
+        <div class="result-card">
+          <div class="result-label">AUC-ROC</div>
+          <div class="result-value">0.765</div>
+          <div class="result-sub">XGBoost + Feature Engineering</div>
+        </div>
+      </div>
+
+      <div class="interp-box">
+        <p class="project-section-title" style="margin-bottom:.5rem;">Interprétabilité du modèle : utilisation de la librairie Python SHAP</p>
+        <p class="project-desc">
+          <strong style="color:var(--text);">Globale</strong> : les variables les plus influentes sur l'ensemble du jeu de données sont <code>EXT_SOURCE_2</code>, <code>EXT_SOURCE_3</code> (scores externes fournis dans le jeu de données), ainsi que des variables créées lors du feature engineering, telles que <code>PAYMENT_RATE</code> (taux de remboursement) et <code>INSTAL_DPD_MEAN</code> (retards moyens).
+        </p>
+        <br />
+        <p class="project-desc">
+          <strong style="color:var(--text);">Locale</strong> : les valeurs SHAP permettent d'expliquer chaque prédiction individuelle — les variables en faveur du remboursement (classe 0) et celles signalant un risque de défaut (classe 1).
+        </p>
+      </div>
+
+      <div class="tech-stack">
+        <span class="tech-tag">Python</span>
+        <span class="tech-tag">scikit-learn</span>
+        <span class="tech-tag">XGBoost</span>
+        <span class="tech-tag">imbalanced-learn</span>
+        <span class="tech-tag">SHAP</span>
+        <span class="tech-tag">pandas</span>
+        <span class="tech-tag">numpy</span>
+        <span class="tech-tag">matplotlib</span>
+        <span class="tech-tag">seaborn</span>
+        <span class="tech-tag">GridSearchCV</span>
+        <span class="tech-tag">RandomizedSearchCV</span>
+        <span class="tech-tag">Pipeline</span>
+        <span class="tech-tag">SMOTE</span>
+        <span class="tech-tag">Jupyter Notebook</span>
+      </div>
+
+    </div>
+  </article>
+
+</div>
+
+<footer>
+  <p>Nicolas Godinaud · nicolas.godinaud@gmail.com</p>
+</footer>
+
+<script>
+  function openLightbox(src) { document.getElementById('lightbox-img').src = src; document.getElementById('lightbox').classList.add('open'); document.body.style.overflow = 'hidden'; }
+  function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); document.body.style.overflow = ''; }
+  document.getElementById('lightbox').addEventListener('click', closeLightbox);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+</script>
+</body>
+</html>

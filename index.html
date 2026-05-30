@@ -32,10 +32,36 @@
       background: rgba(255,255,255,.92); backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,.06);
     }
-    .nav-logo { font-family: var(--mono); font-size: .95rem; color: var(--accent); letter-spacing: .02em; }
-    .nav-links { display: flex; gap: 2rem; }
+    .nav-home { font-size: .875rem; color: var(--text-muted); transition: color .2s; } .nav-home:hover { color: var(--text); text-decoration: none; }
+    .nav-links { display: flex; gap: 2rem; align-items: center; }
     .nav-links a { font-size: .875rem; color: var(--text-muted); transition: color .2s; }
     .nav-links a:hover { color: var(--text); text-decoration: none; }
+
+    /* Dropdown */
+    .nav-dropdown { position: relative; }
+    .nav-dropdown-btn {
+      font-size: .875rem; color: var(--text-muted); background: none; border: none;
+      cursor: pointer; display: flex; align-items: center; gap: .3rem;
+      font-family: var(--font); transition: color .2s; padding: 0;
+    }
+    .nav-dropdown-btn:hover { color: var(--text); }
+    .nav-dropdown-btn::after { content: '▾'; font-size: .7rem; }
+    .nav-dropdown-menu {
+      display: none; position: absolute; top: calc(100% + .75rem); right: 0;
+      background: #ffffff; border: 1px solid var(--border); border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.1); min-width: 260px; overflow: hidden; z-index: 200;
+    }
+    .nav-dropdown-menu.open { display: block; }
+    .nav-dropdown-menu a {
+      display: flex; flex-direction: column; gap: .15rem;
+      padding: .75rem 1rem; border-bottom: 1px solid var(--border);
+      color: var(--text); font-size: .85rem; transition: background .15s;
+    }
+    .nav-dropdown-menu a:last-child { border-bottom: none; }
+    .nav-dropdown-menu a:hover { background: var(--bg2); text-decoration: none; }
+    .nav-dropdown-menu .dd-num { font-family: var(--mono); font-size: .65rem; color: var(--accent); letter-spacing: .08em; }
+    .nav-dropdown-menu .dd-title { font-weight: 600; color: var(--text); }
+    .nav-dropdown-menu .dd-tag { font-size: .75rem; color: var(--text-muted); }
 
     .hero {
       min-height: 100vh; display: flex; flex-direction: column;
@@ -99,10 +125,34 @@
 <body>
 
 <nav>
-  <a class="nav-logo" href="index.html">ng.portfolio</a>
+  <a class="nav-home" href="index.html">Accueil</a>
   <div class="nav-links">
-    <a href="#projets">Projets</a>
-    <a href="mailto:nicolas.godinaud@gmail.com">Contact</a>
+    <div class="nav-dropdown">
+      <button class="nav-dropdown-btn" id="projets-btn">Projets</button>
+      <div class="nav-dropdown-menu" id="projets-menu">
+        <a href="projet-01.html">
+          <span class="dd-num">PROJET 01</span>
+          <span class="dd-title">Modèle de scoring crédit</span>
+          <span class="dd-tag">ML supervisé · XGBoost · SHAP</span>
+        </a>
+        <a href="projet-02.html">
+          <span class="dd-num">PROJET 02</span>
+          <span class="dd-title">Classification d'articles e-commerce</span>
+          <span class="dd-tag">Computer Vision · NLP · CNN</span>
+        </a>
+        <a href="projet-03.html">
+          <span class="dd-num">PROJET 03</span>
+          <span class="dd-title">Segmentation pour véhicule autonome</span>
+          <span class="dd-tag">Segmentation · LinkNet · FastAPI</span>
+        </a>
+        <a href="projet-04.html">
+          <span class="dd-num">PROJET 04</span>
+          <span class="dd-title">Preuve de concept — SegFormer</span>
+          <span class="dd-tag">Transformers · SegFormer · Streamlit</span>
+        </a>
+      </div>
+    </div>
+    
   </div>
 </nav>
 
@@ -169,6 +219,18 @@
       </div>
       <span class="project-tile-arrow">Voir le projet →</span>
     </a>
+    <a class="project-tile" href="projet-04.html">
+      <span class="project-tile-number">PROJET 04</span>
+      <span class="project-tile-title">Preuve de concept — SegFormer</span>
+      <span class="project-tile-desc">Veille thématique et benchmark Transformer vs CNN : SegFormer-B2 vs DeepLabV3+ sur Cityscapes, avec déploiement d'un dashboard Streamlit.</span>
+      <div class="project-tile-tags">
+        <span class="project-tile-tag">Transformers</span>
+        <span class="project-tile-tag">SegFormer</span>
+        <span class="project-tile-tag">PyTorch</span>
+        <span class="project-tile-tag">Streamlit</span>
+      </div>
+      <span class="project-tile-arrow">Voir le projet →</span>
+    </a>
   </div>
 
   <div style="border:1px dashed var(--border); border-radius:16px; padding:3rem 2rem; text-align:center; color:var(--text-muted);">
@@ -180,5 +242,11 @@
   <p>Nicolas Godinaud · nicolas.godinaud@gmail.com</p>
 </footer>
 
+<script>
+  const btn = document.getElementById('projets-btn');
+  const menu = document.getElementById('projets-menu');
+  btn.addEventListener('click', e => { e.stopPropagation(); menu.classList.toggle('open'); });
+  document.addEventListener('click', () => menu.classList.remove('open'));
+</script>
 </body>
 </html>

@@ -26,10 +26,35 @@
       background: rgba(255,255,255,.92); backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,.06);
     }
-    .nav-logo { font-family: var(--mono); font-size: .95rem; color: var(--accent); letter-spacing: .02em; }
+    .nav-home { font-size: .875rem; color: var(--text-muted); transition: color .2s; } .nav-home:hover { color: var(--text); text-decoration: none; }
     .nav-links { display: flex; gap: 2rem; }
     .nav-links a { font-size: .875rem; color: var(--text-muted); transition: color .2s; }
     .nav-links a:hover { color: var(--text); text-decoration: none; }
+    /* Dropdown */
+    .nav-dropdown { position: relative; }
+    .nav-dropdown-btn {
+      font-size: .875rem; color: var(--text-muted); background: none; border: none;
+      cursor: pointer; display: flex; align-items: center; gap: .3rem;
+      font-family: var(--font); transition: color .2s; padding: 0;
+    }
+    .nav-dropdown-btn:hover { color: var(--text); }
+    .nav-dropdown-btn::after { content: '▾'; font-size: .7rem; }
+    .nav-dropdown-menu {
+      display: none; position: absolute; top: calc(100% + .75rem); right: 0;
+      background: #ffffff; border: 1px solid var(--border); border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.1); min-width: 260px; overflow: hidden; z-index: 200;
+    }
+    .nav-dropdown-menu.open { display: block; }
+    .nav-dropdown-menu a {
+      display: flex; flex-direction: column; gap: .15rem;
+      padding: .75rem 1rem; border-bottom: 1px solid var(--border);
+      color: var(--text); font-size: .85rem; transition: background .15s;
+    }
+    .nav-dropdown-menu a:last-child { border-bottom: none; }
+    .nav-dropdown-menu a:hover { background: var(--bg2); text-decoration: none; }
+    .nav-dropdown-menu .dd-num { font-family: var(--mono); font-size: .65rem; color: var(--accent); letter-spacing: .08em; }
+    .nav-dropdown-menu .dd-title { font-weight: 600; color: var(--text); }
+    .nav-dropdown-menu .dd-tag { font-size: .75rem; color: var(--text-muted); }
 
     .page-wrapper { max-width: 1100px; margin: 0 auto; padding: 5rem 2rem 4rem; }
 
@@ -62,7 +87,7 @@
     @media (max-width: 720px) { .project-cols { grid-template-columns: 1fr; } }
 
     .project-section-title { font-family: var(--mono); font-size: .75rem; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-bottom: .75rem; }
-    .project-desc { font-size: .9rem; color: var(--text-muted); line-height: 1.7; }
+    .project-desc { font-size: .9rem; color: var(--text-muted); line-height: 1.7; text-align: justify; }
 
     .steps { list-style: none; display: flex; flex-direction: column; gap: .6rem; }
     .steps li { display: flex; align-items: flex-start; gap: .6rem; font-size: .875rem; color: var(--text-muted); }
@@ -91,7 +116,7 @@
     .model-table .good  { color: var(--accent2); font-weight: 600; }
     .model-table .best-badge { display: inline-block; font-size: .65rem; font-family: var(--mono); padding: .15rem .45rem; border-radius: 4px; background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; margin-left: .5rem; vertical-align: middle; }
 
-    .interp-box { background: var(--bg2); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 1.25rem; margin-bottom: 1.5rem; }
+    .interp-box { background: var(--bg2); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 1.25rem; margin-bottom: 1.5rem; font-size: .875rem; color: var(--text-muted); line-height: 1.7; text-align: justify; }
 
     footer { border-top: 1px solid var(--border); text-align: center; padding: 2.5rem; font-size: .825rem; color: var(--text-muted); font-family: var(--mono); background: var(--bg2); }
     #lightbox { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,.75); backdrop-filter: blur(4px); align-items: center; justify-content: center; cursor: zoom-out; }
@@ -112,10 +137,34 @@
 </div>
 
 <nav>
-  <a class="nav-logo" href="index.html">ng.portfolio</a>
+  <a class="nav-home" href="index.html">Accueil</a>
   <div class="nav-links">
-    <a href="index.html">Projets</a>
-    <a href="mailto:nicolas.godinaud@gmail.com">Contact</a>
+    <div class="nav-dropdown">
+      <button class="nav-dropdown-btn" id="projets-btn">Projets</button>
+      <div class="nav-dropdown-menu" id="projets-menu">
+        <a href="projet-01.html">
+          <span class="dd-num">PROJET 01</span>
+          <span class="dd-title">Modèle de scoring crédit</span>
+          <span class="dd-tag">ML supervisé · XGBoost · SHAP</span>
+        </a>
+        <a href="projet-02.html">
+          <span class="dd-num">PROJET 02</span>
+          <span class="dd-title">Classification d'articles e-commerce</span>
+          <span class="dd-tag">Computer Vision · NLP · CNN</span>
+        </a>
+        <a href="projet-03.html">
+          <span class="dd-num">PROJET 03</span>
+          <span class="dd-title">Segmentation pour véhicule autonome</span>
+          <span class="dd-tag">Segmentation · LinkNet · FastAPI</span>
+        </a>
+        <a href="projet-04.html">
+          <span class="dd-num">PROJET 04</span>
+          <span class="dd-title">Preuve de concept — SegFormer</span>
+          <span class="dd-tag">Transformers · SegFormer · Streamlit</span>
+        </a>
+      </div>
+    </div>
+    
   </div>
 </nav>
 
@@ -249,6 +298,12 @@
   function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); document.body.style.overflow = ''; }
   document.getElementById('lightbox').addEventListener('click', closeLightbox);
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+</script>
+<script>
+  const btn = document.getElementById('projets-btn');
+  const menu = document.getElementById('projets-menu');
+  btn.addEventListener('click', e => { e.stopPropagation(); menu.classList.toggle('open'); });
+  document.addEventListener('click', () => menu.classList.remove('open'));
 </script>
 </body>
 </html>

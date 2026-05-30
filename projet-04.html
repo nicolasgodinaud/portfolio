@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Projet 03 — Segmentation d'images pour véhicule autonome</title>
+  <title>Projet 04 — Preuve de concept : SegFormer pour la segmentation sémantique</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -26,11 +26,11 @@
       background: rgba(255,255,255,.92); backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,.06);
     }
-    .nav-home { font-size: .875rem; color: var(--text-muted); transition: color .2s; } .nav-home:hover { color: var(--text); text-decoration: none; }
+    .nav-home { font-size: .875rem; color: var(--text-muted); transition: color .2s; }
+    .nav-home:hover { color: var(--text); text-decoration: none; }
     .nav-links { display: flex; gap: 2rem; }
     .nav-links a { font-size: .875rem; color: var(--text-muted); transition: color .2s; }
     .nav-links a:hover { color: var(--text); text-decoration: none; }
-    /* Dropdown */
     .nav-dropdown { position: relative; }
     .nav-dropdown-btn {
       font-size: .875rem; color: var(--text-muted); background: none; border: none;
@@ -99,14 +99,20 @@
 
     .model-table { width: 100%; border-collapse: collapse; font-size: .85rem; margin-bottom: 1.5rem; }
     .model-table th { font-family: var(--mono); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); text-align: left; padding: .6rem 1rem; border-bottom: 1px solid var(--border); }
-    .model-table td { padding: .65rem 1rem; border-bottom: 1px solid rgba(48,54,61,.5); color: var(--text-muted); }
+    .model-table td { padding: .65rem 1rem; border-bottom: 1px solid rgba(226,232,240,.8); color: var(--text-muted); }
     .model-table tr:last-child td { border-bottom: none; }
     .model-table .score { font-family: var(--mono); }
     .model-table .best-badge { display: inline-block; font-size: .65rem; font-family: var(--mono); padding: .15rem .45rem; border-radius: 4px; background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; margin-left: .5rem; vertical-align: middle; }
 
     .interp-box { background: var(--bg2); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 1.25rem; margin-bottom: 1.5rem; font-size: .875rem; color: var(--text-muted); line-height: 1.7; text-align: justify; }
 
-    .lightbox-trigger { cursor: zoom-in; display: block; position: relative; }
+    .algo-box { background: var(--accent-light); border: 1px solid #bfdbfe; border-radius: 10px; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; font-size: .875rem; color: var(--text-muted); line-height: 1.7; text-align: justify; }
+    .algo-box strong { color: var(--text); }
+
+    .visual-section { margin-bottom: 2rem; }
+    .visual-section-title { font-family: var(--mono); font-size: .75rem; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem; }
+
+    .lightbox-trigger { cursor: zoom-in; display: block; position: relative; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
     .lightbox-trigger::after { content: '⤢'; position: absolute; bottom: .5rem; right: .5rem; background: rgba(255,255,255,.85); color: var(--accent); font-size: .8rem; padding: .2rem .4rem; border-radius: 4px; opacity: 0; transition: opacity .2s; pointer-events: none; }
     .lightbox-trigger:hover::after { opacity: 1; }
     .lightbox-trigger img { display: block; width: 100%; }
@@ -125,7 +131,7 @@
 </head>
 <body>
 
-<div id="lightbox">
+<div id="lightbox" onclick="closeLightbox()">
   <button id="lightbox-close" onclick="closeLightbox()">✕</button>
   <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation()" />
 </div>
@@ -158,177 +164,177 @@
         </a>
       </div>
     </div>
-    
   </div>
 </nav>
 
 <div class="page-wrapper">
-
   <a class="back-link" href="index.html">← Retour au portfolio</a>
 
-  <article class="project-card">
+  <div class="project-card">
     <div class="project-header">
       <div class="project-meta">
-        <span class="project-number">PROJET 03 · DEEP LEARNING · COMPUTER VISION</span>
-        <h1 class="project-title">Segmentation d'images pour véhicule autonome</h1>
-        <span class="project-context">Modèle de segmentation sémantique pour système embarqué</span>
-        <div class="project-badges">
-          <span class="badge badge-purple">Segmentation sémantique</span>
-          <span class="badge badge-blue">Transfer Learning</span>
-          <span class="badge badge-green">FastAPI</span>
-          <span class="badge badge-orange">Streamlit</span>
-        </div>
+        <span class="project-number">PROJET 04</span>
+        <h1 class="project-title">Preuve de concept — SegFormer pour la segmentation sémantique</h1>
+        <p class="project-context">Veille thématique · Benchmark Transformer vs CNN · Dashboard de visualisation</p>
+      </div>
+      <div class="project-badges">
+        <span class="badge badge-purple">Transformers</span>
+        <span class="badge badge-blue">SegFormer</span>
+        <span class="badge badge-blue">DeepLabV3+</span>
+        <span class="badge badge-green">PyTorch</span>
+        <span class="badge badge-orange">Streamlit</span>
       </div>
     </div>
 
     <div class="project-body">
 
+      <!-- Contexte -->
       <div class="project-cols">
         <div>
-          <p class="project-section-title">Contexte & Problématique</p>
+          <p class="project-section-title">Contexte &amp; problématique</p>
           <p class="project-desc">
-            Au sein de l'équipe R&D de l'entreprise fictive <em>Future Vision Transport</em>, l'objectif est de développer un modèle de <strong>segmentation sémantique</strong> d'images de conduite urbaine, capable de s'intégrer dans la chaîne embarquée d'un véhicule autonome. Les modèles doivent permettre d'identifier pixel par pixel 8 catégories de l'environnement routier. Les modèles ont été entraînés et évalués sur le dataset <a href="https://www.cityscapes-dataset.com/" target="_blank">Cityscapes</a>.
+            Dans le cadre d'une mission de veille thématique pour DataSpace, l'objectif était d'identifier un algorithme récent (moins de 5 ans) capable d'améliorer les performances d'un modèle de segmentation sémantique existant, et d'en produire une preuve de concept concrète.
+          </p>
+          <br />
+          <p class="project-desc">
+            Le dataset utilisé est <strong>Cityscapes</strong>, le même que celui utilisé pour le
+            <a href="projet-03.html">Projet 03 — Segmentation pour véhicule autonome</a>.
+            Il s'agit d'un jeu de données de référence pour la segmentation urbaine, composé de plus de 5 000 images haute résolution annotées pixel à pixel. Les 35 classes d'origine ont été regroupées en <strong>8 catégories principales</strong> : Void, Flat, Construction, Object, Nature, Sky, Human et Vehicle.
+          </p>
+          <br />
+          <p class="project-desc">
+            Le modèle de référence (baseline) retenu est <strong>DeepLabV3+</strong> avec un backbone Xception, architecture CNN déjà évaluée dans le projet précédent. L'algorithme identifié par la veille est <strong>SegFormer</strong>, une architecture basée sur les Transformers introduite par NVIDIA en 2021.
           </p>
         </div>
         <div>
           <p class="project-section-title">Démarche</p>
           <ul class="steps">
-            <li><span>Préparation du dataset Cityscapes</span></li>
-            <li><span>Pipeline industrialisable avec <strong>Data Generator</strong> Keras : chargement des images à la volée, prétraitements, data augmentation</span></li>
-            <li><span>Implémentation de différentes architectures <strong>CNN</strong> Encoder–Decoder avec <strong>TensorFlow</strong></span></li>
-            <li><span>Benchmark de 5 architectures : FCN8, U-Net (custom), U-Net+EfficientNet, LinkNet+MobileNet, DeepLabV3++Xception</span></li>
-            <li><span>Développement d'une <strong>API FastAPI</strong> déployée sur AWS EC2</span></li>
-            <li><span>Application web <strong>Streamlit</strong> de visualisation déployée sur le cloud</span></li>
+            <li>Veille thématique pour identifier un algorithme récent adapté à la segmentation sémantique</li>
+            <li>Rédaction d'un plan prévisionnel présentant l'algorithme retenu, le dataset et les références bibliographiques</li>
+            <li>Implémentation du pipeline d'entraînement avec PyTorch et Segmentation Models PyTorch</li>
+            <li>Entraînement et évaluation des deux modèles (SegFormer-B2 et DeepLabV3+) sur le même jeu de test</li>
+            <li>Analyse quantitative (mIoU, temps d'inférence) et qualitative (visualisations comparatives)</li>
+            <li>Déploiement d'un dashboard Streamlit pour présenter interactivement les prédictions des deux modèles</li>
           </ul>
         </div>
       </div>
 
-      <p class="project-section-title">Présentation des données</p>
-      <p class="project-desc" style="margin-bottom:1rem;">
-        <a href="https://www.cityscapes-dataset.com/" target="_blank">Cityscapes</a> est un jeu de données de référence pour la segmentation sémantique en conduite urbaine. Il contient <strong>5 000 images</strong> de scènes de rue annotées finement, capturées dans 50 villes d'Europe, avec des masques de segmentation pixel par pixel répartis en 32 sous-catégories. Dans ce projet, ces sous-catégories sont regroupées en <strong>8 classes principales</strong> pour simplifier la tâche de segmentation.
-      </p>
-      <div style="display:flex; gap:1.25rem; align-items:flex-start; margin-bottom:2rem; flex-wrap:wrap;">
-        <div style="flex:1; min-width:200px;">
-          <p style="font-family:var(--mono);font-size:.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem;">Image originale</p>
-          <a class="lightbox-trigger" onclick="openLightbox('images/proj8_sample_orig.jpg')">
-            <img src="images/proj8_sample_orig.jpg" alt="Image Cityscapes originale" style="width:100%;border-radius:8px;border:1px solid var(--border);" />
-          </a>
-        </div>
-        <div style="flex:1; min-width:200px;">
-          <p style="font-family:var(--mono);font-size:.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem;">Masque de segmentation</p>
-          <a class="lightbox-trigger" onclick="openLightbox('images/proj8_sample_mask.png')">
-            <img src="images/proj8_sample_mask.png" alt="Masque de segmentation Cityscapes" style="width:100%;border-radius:8px;border:1px solid var(--border);" />
-          </a>
-        </div>
-        <div style="flex-shrink:0;">
-          <p style="font-family:var(--mono);font-size:.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem;">Légende</p>
-          <div style="font-size:.8rem; color:var(--text-muted); line-height:1.95; display:flex; flex-direction:column; gap:.1rem;">
-            <div style="display:flex;align-items:center;gap:.5rem;"><span style="display:inline-block;width:14px;height:14px;background:#000000;border-radius:2px;flex-shrink:0;"></span> Void — zones ignorées</div>
-            <div style="display:flex;align-items:center;gap:.5rem;"><span style="display:inline-block;width:14px;height:14px;background:#804080;border-radius:2px;flex-shrink:0;"></span> Flat — routes, trottoirs</div>
-            <div style="display:flex;align-items:center;gap:.5rem;"><span style="display:inline-block;width:14px;height:14px;background:#464646;border-radius:2px;flex-shrink:0;"></span> Construction — bâtiments</div>
-            <div style="display:flex;align-items:center;gap:.5rem;"><span style="display:inline-block;width:14px;height:14px;background:#dcdc00;border-radius:2px;flex-shrink:0;"></span> Object — poteaux, signaux</div>
-            <div style="display:flex;align-items:center;gap:.5rem;"><span style="display:inline-block;width:14px;height:14px;background:#6b8e23;border-radius:2px;flex-shrink:0;"></span> Nature — végétation</div>
-            <div style="display:flex;align-items:center;gap:.5rem;"><span style="display:inline-block;width:14px;height:14px;background:#4682b4;border-radius:2px;flex-shrink:0;"></span> Sky — ciel</div>
-            <div style="display:flex;align-items:center;gap:.5rem;"><span style="display:inline-block;width:14px;height:14px;background:#dc143c;border-radius:2px;flex-shrink:0;"></span> Human — piétons</div>
-            <div style="display:flex;align-items:center;gap:.5rem;"><span style="display:inline-block;width:14px;height:14px;background:#00008e;border-radius:2px;flex-shrink:0;"></span> Vehicle — voitures</div>
-          </div>
-        </div>
+      <!-- SegFormer -->
+      <p class="project-section-title">L'algorithme : SegFormer</p>
+      <div class="algo-box">
+        <strong>SegFormer</strong> (Xie et al., NeurIPS 2021) repose sur une combinaison originale d'un <strong>encodeur Transformer hiérarchique</strong> (MiT — Mix Transformer) et d'un <strong>décodeur MLP</strong> léger. Contrairement aux CNN qui capturent le contexte local via des filtres de convolution, l'encodeur MiT utilise des mécanismes d'attention capables de modéliser des relations globales dans l'image à différentes résolutions.
+        <br /><br />
+        Le décodeur est volontairement simple : il fusionne les sorties multi-échelles de l'encodeur via des couches entièrement connectées, sans convolution ni module complexe. Cette conception le rend très rapide à l'inférence. L'encodeur est décliné en plusieurs variantes (B0 à B5) offrant un compromis entre légèreté et précision. La variante <strong>MiT-B2</strong> a été retenue ici pour son bon équilibre entre performance et temps de calcul.
       </div>
 
-      <p class="project-section-title">Pipeline</p>
+      <!-- Pipeline -->
+      <p class="project-section-title">Pipeline de modélisation</p>
       <div class="pipeline">
-        <span class="pipe-step">Cityscapes (8 classes)</span><span class="pipe-arrow">→</span>
-        <span class="pipe-step">Data Generator</span><span class="pipe-arrow">→</span>
-        <span class="pipe-step">CNN Encoder–Decoder</span><span class="pipe-arrow">→</span>
-        <span class="pipe-step">CCE + Dice Loss</span><span class="pipe-arrow">→</span>
-        <span class="pipe-step">FastAPI (AWS)</span><span class="pipe-arrow">→</span>
-        <span class="pipe-step">Streamlit</span>
+        <span class="pipe-step">Cityscapes (5 000 img)</span>
+        <span class="pipe-arrow">→</span>
+        <span class="pipe-step">Redim. 512×1024</span>
+        <span class="pipe-arrow">→</span>
+        <span class="pipe-step">Normalisation ImageNet</span>
+        <span class="pipe-arrow">→</span>
+        <span class="pipe-step">Split 65/13/22%</span>
+        <span class="pipe-arrow">→</span>
+        <span class="pipe-step">Entraînement (15 epochs)</span>
+        <span class="pipe-arrow">→</span>
+        <span class="pipe-step">Évaluation mIoU</span>
       </div>
+      <p class="project-desc" style="margin-bottom:1.5rem;">
+        Les deux modèles ont été entraînés avec la <strong>Dice Loss</strong>, l'optimiseur <strong>Adam</strong> (lr = 1×10⁻⁴) sur <strong>15 époques</strong> avec des batchs de taille 2. Les performances finales ont été mesurées sur un jeu de test de <strong>789 images</strong>.
+      </p>
 
-      <p class="project-section-title">Comparaison des architectures</p>
-      <p class="project-desc" style="margin-bottom:1rem;">Résultats obtenus sur un ensemble de test de <strong>790 images</strong>.</p>
+      <!-- Résultats -->
+      <p class="project-section-title">Résultats</p>
       <table class="model-table">
         <thead>
           <tr>
-            <th>Architecture</th><th>Backbone</th>
-            <th>Temps train (min) ↓</th><th>Temps inf. (s) ↓</th>
-            <th>mIoU ↑</th><th>mDice ↑</th>
+            <th>Modèle</th>
+            <th>Backbone</th>
+            <th>Train mIoU</th>
+            <th>Test mIoU</th>
+            <th>Temps inférence (s)</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td>FCN8</td><td>VGG16</td><td class="score">60</td><td class="score">518</td><td class="score">0.616</td><td class="score">0.710</td></tr>
-          <tr><td>U-Net</td><td>Custom</td><td class="score">74</td><td class="score">462</td><td class="score">0.576</td><td class="score">0.672</td></tr>
-          <tr><td>U-Net</td><td>EfficientNet</td><td class="score">67</td><td class="score">364</td><td class="score">0.680</td><td class="score">0.764</td></tr>
-          <tr><td>LinkNet <span class="best-badge">★ DÉPLOYÉ</span></td><td>MobileNet</td><td class="score">44</td><td class="score">243</td><td class="score">0.640</td><td class="score">0.733</td></tr>
-          <tr><td>DeepLabV3+</td><td>Xception</td><td class="score">79</td><td class="score">399</td><td class="score">0.697</td><td class="score">0.776</td></tr>
+          <tr>
+            <td>DeepLabV3+ <span class="best-badge">Baseline</span></td>
+            <td>Xception</td>
+            <td class="score">0.837</td>
+            <td class="score">0.780</td>
+            <td class="score">703</td>
+          </tr>
+          <tr>
+            <td>SegFormer-B2 <span class="best-badge" style="background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe;">★ Nouveau</span></td>
+            <td>MiT-B2</td>
+            <td class="score">0.837</td>
+            <td class="score">0.794</td>
+            <td class="score">527</td>
+          </tr>
         </tbody>
       </table>
 
-      <div class="interp-box">
-        <p class="project-section-title" style="margin-bottom:.5rem;">Pourquoi LinkNet plutôt que DeepLabV3+ ?</p>
-        <p class="project-desc">
-          Bien que <strong style="color:var(--text);">DeepLabV3+</strong> obtienne les meilleures performances globales (mIoU : 0.697), son temps d'inférence élevé le rend inadapté à un système embarqué nécessitant des prédictions en temps réel.
-          <strong style="color:var(--text);">LinkNet + MobileNet</strong> a été retenu pour sa légèreté : avec un temps d'inférence de 243&nbsp;s sur l'ensemble de test (contre 399&nbsp;s pour DeepLabV3+), il offre le meilleur compromis précision / vitesse pour une application de conduite autonome embarquée.
-        </p>
-      </div>
-
-      <p class="project-section-title">Résultats clés</p>
       <div class="results-grid">
         <div class="result-card">
-          <div class="result-label">Mean IoU (test)</div>
-          <div class="result-value">0.640</div>
-          <div class="result-sub">LinkNet + MobileNet</div>
+          <div class="result-label">mIoU SegFormer</div>
+          <div class="result-value">0.794</div>
+          <div class="result-sub">vs 0.780 pour DeepLabV3+</div>
         </div>
         <div class="result-card">
-          <div class="result-label">mDice (test)</div>
-          <div class="result-value">0.733</div>
-          <div class="result-sub">LinkNet + MobileNet</div>
+          <div class="result-label">Gain mIoU</div>
+          <div class="result-value">+1.8%</div>
+          <div class="result-sub">sur 789 images de test</div>
         </div>
         <div class="result-card">
-          <div class="result-label">Déploiement</div>
-          <div class="result-value" style="font-size:1rem;">AWS EC2</div>
-          <div class="result-sub">API FastAPI + Streamlit</div>
+          <div class="result-label">Gain vitesse</div>
+          <div class="result-value">−25%</div>
+          <div class="result-sub">527s vs 703s d'inférence</div>
         </div>
         <div class="result-card">
-          <div class="result-label">Classes</div>
-          <div class="result-value">8</div>
-          <div class="result-sub">Dataset Cityscapes</div>
+          <div class="result-label">Images de test</div>
+          <div class="result-value">789</div>
+          <div class="result-sub">jeu de test Cityscapes</div>
         </div>
       </div>
 
-      <p class="project-section-title">Visuels</p>
-      <div style="margin-bottom:1rem;">
-        <p style="font-family:var(--mono);font-size:.72rem;color:var(--text-muted);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.08em;">Comparaison DeepLabV3+ vs LinkNet</p>
-        <a class="lightbox-trigger" onclick="openLightbox('images/proj8_comparison.png')">
-          <img src="images/proj8_comparison.png" alt="Comparaison modèles" style="width:100%;border-radius:8px;border:1px solid var(--border);" />
-        </a>
+      <div class="interp-box">
+        SegFormer-B2 surpasse DeepLabV3+ à la fois en précision (+1,8 points de mIoU) et en vitesse d'inférence (25% plus rapide), tout en atteignant le même score sur les données d'entraînement. Ce gain, bien que modeste, est significatif dans un contexte multiclasse : il se traduit par une meilleure détection des objets fins (poteaux, panneaux) et une segmentation plus précise des contours. L'architecture Transformer, en capturant des dépendances globales dans l'image, se montre plus adaptée à ce type de tâche que l'approche CNN classique.
       </div>
-      <div style="margin-bottom:2rem;">
-        <p style="font-family:var(--mono);font-size:.72rem;color:var(--text-muted);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.08em;">Interface Streamlit de test</p>
-        <a class="lightbox-trigger" onclick="openLightbox('images/proj8_interface.png')">
-          <img src="images/proj8_interface.png" alt="Interface Streamlit" style="width:100%;border-radius:8px;border:1px solid var(--border);" />
+
+      <!-- Dashboard -->
+      <p class="project-section-title">Dashboard</p>
+      <p class="project-desc" style="margin-bottom:1.25rem;">
+        Un dashboard <strong>Streamlit</strong> a été développé et déployé afin de présenter interactivement les résultats de la preuve de concept. Il permet de visualiser, pour chaque image du jeu de test, l'image originale, le masque de vérité terrain et les prédictions des deux modèles côte à côte.
+      </p>
+      <div style="display:flex; flex-direction:column; gap:1rem; margin-bottom:2rem;">
+        <a class="lightbox-trigger" onclick="openLightbox('images/proj9_dashboard1.png')">
+          <img src="images/proj9_dashboard1.png" alt="Dashboard — présentation du dataset" />
+        </a>
+        <a class="lightbox-trigger" onclick="openLightbox('images/proj9_dashboard2.png')">
+          <img src="images/proj9_dashboard2.png" alt="Dashboard — sélection d'une image" />
+        </a>
+        <a class="lightbox-trigger" onclick="openLightbox('images/proj9_dashboard3.png')">
+          <img src="images/proj9_dashboard3.png" alt="Dashboard — comparaison des prédictions" />
         </a>
       </div>
 
+      <!-- Tech stack -->
       <div class="tech-stack">
-        <span class="tech-tag">Python</span>
-        <span class="tech-tag">TensorFlow / Keras</span>
-        <span class="tech-tag">U-Net</span>
+        <span class="tech-tag">PyTorch</span>
+        <span class="tech-tag">Segmentation Models PyTorch</span>
+        <span class="tech-tag">SegFormer (MiT-B2)</span>
         <span class="tech-tag">DeepLabV3+</span>
-        <span class="tech-tag">LinkNet</span>
-        <span class="tech-tag">MobileNet</span>
-        <span class="tech-tag">FastAPI</span>
-        <span class="tech-tag">Streamlit</span>
-        <span class="tech-tag">AWS EC2</span>
-        <span class="tech-tag">Dice Loss</span>
-        <span class="tech-tag">Mean IoU</span>
         <span class="tech-tag">Cityscapes</span>
-        <span class="tech-tag">Jupyter Notebook</span>
+        <span class="tech-tag">Dice Loss</span>
+        <span class="tech-tag">mIoU</span>
+        <span class="tech-tag">Streamlit</span>
+        <span class="tech-tag">Python</span>
       </div>
 
     </div>
-  </article>
-
+  </div>
 </div>
 
 <footer>
@@ -336,16 +342,20 @@
 </footer>
 
 <script>
-  function openLightbox(src) { document.getElementById('lightbox-img').src = src; document.getElementById('lightbox').classList.add('open'); document.body.style.overflow = 'hidden'; }
-  function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); document.body.style.overflow = ''; }
-  document.getElementById('lightbox').addEventListener('click', closeLightbox);
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
-</script>
-<script>
   const btn = document.getElementById('projets-btn');
   const menu = document.getElementById('projets-menu');
   btn.addEventListener('click', e => { e.stopPropagation(); menu.classList.toggle('open'); });
   document.addEventListener('click', () => menu.classList.remove('open'));
+
+  function openLightbox(src) {
+    document.getElementById('lightbox-img').src = src;
+    document.getElementById('lightbox').classList.add('open');
+  }
+  function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('open');
+    document.getElementById('lightbox-img').src = '';
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
 </script>
 </body>
 </html>

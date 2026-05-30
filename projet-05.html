@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Projet 04 — Preuve de concept : SegFormer pour la segmentation sémantique</title>
+  <title>Projet 05 — Analyse de sentiments de tweets</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -29,8 +29,6 @@
     .nav-home { font-size: .875rem; color: var(--text-muted); transition: color .2s; }
     .nav-home:hover { color: var(--text); text-decoration: none; }
     .nav-links { display: flex; gap: 2rem; }
-    .nav-links a { font-size: .875rem; color: var(--text-muted); transition: color .2s; }
-    .nav-links a:hover { color: var(--text); text-decoration: none; }
     .nav-dropdown { position: relative; }
     .nav-dropdown-btn {
       font-size: .875rem; color: var(--text-muted); background: none; border: none;
@@ -72,6 +70,7 @@
     .badge-green  { background: #f0fdf4; color: #15803d; }
     .badge-orange { background: #fffbeb; color: #b45309; }
     .badge-purple { background: #f5f3ff; color: #6d28d9; }
+    .badge-red    { background: #fef2f2; color: #b91c1c; }
 
     .project-body { padding: 2rem; }
     .project-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem; }
@@ -106,11 +105,15 @@
 
     .interp-box { background: var(--bg2); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 1.25rem; margin-bottom: 1.5rem; font-size: .875rem; color: var(--text-muted); line-height: 1.7; text-align: justify; }
 
-    .algo-box { background: var(--accent-light); border: 1px solid #bfdbfe; border-radius: 10px; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; font-size: .875rem; color: var(--text-muted); line-height: 1.7; text-align: justify; }
-    .algo-box strong { color: var(--text); }
+    .mlops-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+    @media (max-width: 720px) { .mlops-grid { grid-template-columns: 1fr; } }
+    .mlops-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.25rem; }
+    .mlops-card-title { font-family: var(--mono); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin-bottom: .5rem; }
+    .mlops-card-desc { font-size: .83rem; color: var(--text-muted); line-height: 1.6; text-align: justify; }
 
-    .visual-section { margin-bottom: 2rem; }
-    .visual-section-title { font-family: var(--mono); font-size: .75rem; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem; }
+    .visual-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+    @media (max-width: 720px) { .visual-grid { grid-template-columns: 1fr; } }
+    .visual-label { font-family: var(--mono); font-size: .7rem; color: var(--text-muted); margin-top: .4rem; text-align: center; }
 
     .lightbox-trigger { cursor: zoom-in; display: block; position: relative; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
     .lightbox-trigger::after { content: '⤢'; position: absolute; bottom: .5rem; right: .5rem; background: rgba(255,255,255,.85); color: var(--accent); font-size: .8rem; padding: .2rem .4rem; border-radius: 4px; opacity: 0; transition: opacity .2s; pointer-events: none; }
@@ -177,164 +180,200 @@
   <div class="project-card">
     <div class="project-header">
       <div class="project-meta">
-        <span class="project-number">PROJET 04</span>
-        <h1 class="project-title">Preuve de concept — SegFormer pour la segmentation sémantique</h1>
-        <p class="project-context">Veille thématique · Benchmark Transformer vs CNN · Dashboard de visualisation</p>
-      </div>
-      <div class="project-badges">
-        <span class="badge badge-purple">Transformers</span>
-        <span class="badge badge-blue">SegFormer</span>
-        <span class="badge badge-blue">DeepLabV3+</span>
-        <span class="badge badge-green">PyTorch</span>
-        <span class="badge badge-orange">Streamlit</span>
+        <span class="project-number">PROJET 05</span>
+        <h1 class="project-title">Analyse de sentiments de tweets</h1>
+        <p class="project-context">NLP · Deep Learning · MLOps · Déploiement continu sur Azure</p>
+        <div class="project-badges">
+          <span class="badge badge-blue">NLP</span>
+          <span class="badge badge-blue">LSTM</span>
+          <span class="badge badge-purple">DistilBERT</span>
+          <span class="badge badge-green">MLFlow</span>
+          <span class="badge badge-orange">Azure</span>
+          <span class="badge badge-red">MLOps</span>
+          <span class="badge badge-green">CI/CD</span>
+        </div>
       </div>
     </div>
 
     <div class="project-body">
 
-      <!-- Contexte -->
+      <!-- Contexte & Démarche -->
       <div class="project-cols">
         <div>
           <p class="project-section-title">Contexte &amp; problématique</p>
           <p class="project-desc">
-            Dans le cadre d'une mission de veille thématique pour DataSpace, l'objectif était d'identifier un algorithme récent (moins de 5 ans) capable d'améliorer les performances d'un modèle de segmentation sémantique existant, et d'en produire une preuve de concept concrète.
+            Air Paradis, compagnie aérienne confrontée à des bad buzz récurrents sur les réseaux sociaux, mandate le cabinet MIC pour développer un prototype d'IA capable de <strong>prédire automatiquement le sentiment associé à un tweet</strong> (positif ou négatif). L'objectif est de détecter en temps réel les signaux négatifs afin de réagir rapidement avant qu'une crise ne s'amplifie.
           </p>
           <br />
           <p class="project-desc">
-            Le dataset utilisé est <strong>Cityscapes</strong>, le même que celui utilisé pour le
-            <a href="projet-03.html">Projet 03 — Segmentation pour véhicule autonome</a>.
-            Il s'agit d'un jeu de données de référence pour la segmentation urbaine, composé de plus de 5 000 images haute résolution annotées pixel par pixel. Les 35 classes d'origine ont été regroupées en <strong>8 catégories principales</strong> : Void, Flat, Construction, Object, Nature, Sky, Human et Vehicle.
-          </p>
-          <br />
-          <p class="project-desc">
-            Le modèle de référence (baseline) retenu est <strong>DeepLabV3+</strong> avec un backbone Xception, architecture CNN déjà évaluée dans le projet précédent. L'algorithme identifié par la veille est <strong>SegFormer</strong>, une architecture basée sur les Transformers introduite par NVIDIA en 2021.
+            Le dataset utilisé est <a href="https://www.kaggle.com/datasets/kazanova/sentiment140" target="_blank"><strong>Sentiment140</strong></a>, un jeu de données open source de 1,6 million de tweets annotés binairement (sentiment négatif ou positif). Trois approches de modélisation ont été comparées, de la plus simple à la plus avancée, avec une démarche <strong>MLOps</strong> complète intégrant tracking des expérimentations, versioning, déploiement continu et monitoring en production.
           </p>
         </div>
         <div>
           <p class="project-section-title">Démarche</p>
           <ul class="steps">
-            <li><span>Veille thématique pour identifier un algorithme récent adapté à la segmentation sémantique</span></li>
-            <li><span>Implémentation du pipeline d'entraînement avec <strong>PyTorch</strong> et <strong>Segmentation Models PyTorch</strong></span></li>
-            <li><span>Entraînement et évaluation des deux modèles (SegFormer-B2 et DeepLabV3+) sur le même jeu de test</span></li>
-            <li><span>Analyse quantitative (mIoU, temps d'inférence) et qualitative (visualisations comparatives)</span></li>
-            <li><span>Déploiement d'un <strong>dashboard Streamlit</strong> pour présenter interactivement les prédictions des deux modèles</span></li>
-            <li><span>Rédaction d'une <strong>note méthodologique</strong> présentant l'algorithme, la modélisation et la synthèse des résultats</span></li>
+            <li><span>Prétraitement des tweets : nettoyage, tokenisation, encodage</span></li>
+            <li><span>Entraînement d'un modèle <strong>baseline</strong> (régression logistique) pour référence</span></li>
+            <li><span>Entraînement de modèles avancés : <strong>LSTM + Word2Vec</strong>, <strong>LSTM + GloVe</strong>, <strong>CNN + Word2Vec</strong></span></li>
+            <li><span>Fine-tuning de <strong>DistilBERT</strong> pour évaluer l'apport des Transformers</span></li>
+            <li><span>Tracking de toutes les expérimentations avec <strong>MLFlow</strong> (métriques, artefacts, modèles)</span></li>
+            <li><span>Déploiement de l'API Flask sur <strong>Azure Web App</strong> via pipeline CI/CD (GitHub Actions)</span></li>
+            <li><span>Monitoring en production avec <strong>Azure Application Insights</strong> (traces, alertes email)</span></li>
+            <li><span>Développement d'une interface de test <strong>Streamlit</strong> permettant de soumettre un tweet et de valider ou corriger la prédiction</span></li>
           </ul>
         </div>
       </div>
 
-      <!-- SegFormer -->
-      <p class="project-section-title">L'algorithme : SegFormer</p>
-      <div class="algo-box">
-        <strong>SegFormer</strong> (Xie et al., NeurIPS 2021) repose sur une combinaison originale d'un <strong>encodeur Transformer hiérarchique</strong> (MiT — Mix Transformer) et d'un <strong>décodeur MLP</strong> léger. Contrairement aux CNN qui capturent le contexte local via des filtres de convolution, l'encodeur MiT utilise des mécanismes d'attention capables de modéliser des relations globales dans l'image à différentes résolutions.
-        <br /><br />
-        Le décodeur est volontairement simple : il fusionne les sorties multi-échelles de l'encodeur via des couches entièrement connectées, sans convolution ni module complexe. Cette conception le rend très rapide à l'inférence. L'encodeur est décliné en plusieurs variantes (B0 à B5) offrant un compromis entre légèreté et précision. La variante <strong>MiT-B2</strong> a été retenue ici pour son bon équilibre entre performance et temps de calcul.
-      </div>
-
-      <!-- Pipeline -->
-      <p class="project-section-title">Pipeline de modélisation</p>
-      <div class="pipeline">
-        <span class="pipe-step">Cityscapes (5 000 img)</span>
-        <span class="pipe-arrow">→</span>
-        <span class="pipe-step">Redim. 512×1024</span>
-        <span class="pipe-arrow">→</span>
-        <span class="pipe-step">Normalisation ImageNet</span>
-        <span class="pipe-arrow">→</span>
-        <span class="pipe-step">Split 65/13/22%</span>
-        <span class="pipe-arrow">→</span>
-        <span class="pipe-step">Entraînement (15 epochs)</span>
-        <span class="pipe-arrow">→</span>
-        <span class="pipe-step">Évaluation mIoU</span>
-      </div>
-
-      <!-- Résultats -->
-      <p class="project-section-title">Résultats - Jeu de test de 790 images</p>
+      <!-- Comparaison des modèles -->
+      <p class="project-section-title">Comparaison des modèles</p>
       <table class="model-table">
         <thead>
           <tr>
             <th>Modèle</th>
-            <th>Backbone</th>
-            <th>Train mIoU</th>
-            <th>Test mIoU</th>
-            <th>Temps entraînement</th>
-            <th>Temps inférence (s)</th>
+            <th>Type</th>
+            <th>Test Accuracy</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>DeepLabV3+ <span class="best-badge">Baseline</span></td>
-            <td>Xception</td>
-            <td class="score">0.837</td>
-            <td class="score">0.780</td>
-            <td class="score">~105 min</td>
-            <td class="score">703</td>
-          </tr>
+            <td>Régression logistique <span class="best-badge">Baseline</span></td>
+            <td>ML classique</td>
+            <td class="score">0.789</td>
+            </tr>
           <tr>
-            <td>SegFormer-B2 <span class="best-badge" style="background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe;">★ Nouveau</span></td>
-            <td>MiT-B2</td>
-            <td class="score">0.837</td>
-            <td class="score">0.794</td>
-            <td class="score">~83 min</td>
-            <td class="score">527</td>
-          </tr>
+            <td>CNN + Word2Vec</td>
+            <td>Deep Learning</td>
+            <td class="score">0.797</td>
+            </tr>
+          <tr>
+            <td>LSTM + GloVe</td>
+            <td>Deep Learning</td>
+            <td class="score">0.803</td>
+            </tr>
+          <tr>
+            <td>LSTM + Word2Vec <span class="best-badge" style="background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe;">★ DÉPLOYÉ</span></td>
+            <td>Deep Learning</td>
+            <td class="score">0.806</td>
+            </tr>
+          <tr>
+            <td>DistilBERT</td>
+            <td>Transformer</td>
+            <td class="score">0.815</td>
+            </tr>
         </tbody>
       </table>
 
       <div class="results-grid">
         <div class="result-card">
-          <div class="result-label">mIoU SegFormer</div>
-          <div class="result-value">0.794</div>
-          <div class="result-sub">vs 0.780 pour DeepLabV3+</div>
+          <div class="result-label">Accuracy LSTM déployé</div>
+          <div class="result-value">80.6%</div>
+          <div class="result-sub">LSTM + Word2Vec sur test set</div>
         </div>
         <div class="result-card">
-          <div class="result-label">Gain mIoU</div>
-          <div class="result-value">+1.8%</div>
-          <div class="result-sub">sur 789 images de test</div>
+          <div class="result-label">AUC LSTM déployé</div>
+          <div class="result-value">0.889</div>
+          <div class="result-sub">meilleur score AUC</div>
         </div>
         <div class="result-card">
-          <div class="result-label">Gain vitesse</div>
-          <div class="result-value">−25%</div>
-          <div class="result-sub">527s vs 703s d'inférence</div>
+          <div class="result-label">Accuracy DistilBERT</div>
+          <div class="result-value">81.5%</div>
+          <div class="result-sub">+0.9% vs LSTM, coût élevé</div>
         </div>
         <div class="result-card">
-          <div class="result-label">Images de test</div>
-          <div class="result-value">789</div>
-          <div class="result-sub">jeu de test Cityscapes</div>
+          <div class="result-label">Dataset</div>
+          <div class="result-value">1.6M</div>
+          <div class="result-sub">tweets annotés (Sentiment140)</div>
         </div>
       </div>
 
       <div class="interp-box">
-        SegFormer-B2 surpasse DeepLabV3+ à la fois en précision (+1,8 points de mIoU) et en vitesse d'inférence (25% plus rapide), tout en atteignant le même score sur les données d'entraînement. Ce gain, bien que modeste, est significatif dans un contexte multiclasse : il se traduit par une meilleure détection des objets fins (poteaux, panneaux) et une segmentation plus précise des contours. L'architecture Transformer, en capturant des dépendances globales dans l'image, se montre plus adaptée à ce type de tâche que l'approche CNN classique.
+        Le modèle <strong>LSTM + Word2Vec</strong> a été retenu pour le déploiement : il offre le meilleur compromis entre performance (AUC 0.889) et coût computationnel. DistilBERT obtient une accuracy légèrement supérieure (+0.9%) mais au prix d'un temps d'entraînement et d'inférence bien plus élevé, peu adapté à un déploiement embarqué sur une solution cloud gratuite. La régression logistique sert de baseline solide, avec une accuracy de 78.9% obtenue en quelques secondes d'entraînement.
       </div>
 
-      <!-- Dashboard -->
-      <p class="project-section-title">Dashboard</p>
+      <!-- Pipeline -->
+      <p class="project-section-title">Pipeline de modélisation</p>
+      <div class="pipeline">
+        <span class="pipe-step">Sentiment140 (1.6M tweets)</span>
+        <span class="pipe-arrow">→</span>
+        <span class="pipe-step">Nettoyage &amp; tokenisation</span>
+        <span class="pipe-arrow">→</span>
+        <span class="pipe-step">Word embeddings</span>
+        <span class="pipe-arrow">→</span>
+        <span class="pipe-step">Entraînement LSTM</span>
+        <span class="pipe-arrow">→</span>
+        <span class="pipe-step">MLFlow tracking</span>
+        <span class="pipe-arrow">→</span>
+        <span class="pipe-step">API Flask</span>
+        <span class="pipe-arrow">→</span>
+        <span class="pipe-step">Azure Web App</span>
+      </div>
+
+      <!-- MLOps -->
+      <p class="project-section-title">Démarche MLOps</p>
+      <div class="mlops-grid">
+        <div class="mlops-card">
+          <div class="mlops-card-title">MLFlow — Tracking &amp; stockage</div>
+          <div class="mlops-card-desc">Toutes les expérimentations sont enregistrées dans MLFlow : métriques (accuracy, AUC), hyperparamètres, artefacts (modèles, tokenizers). Permet de comparer visuellement les runs et de centraliser le stockage des modèles.</div>
+        </div>
+        <div class="mlops-card">
+          <div class="mlops-card-title">GitHub Actions — CI/CD</div>
+          <div class="mlops-card-desc">Un pipeline de déploiement continu est mis en place via GitHub Actions : à chaque push sur la branche principale, les tests unitaires sont exécutés automatiquement, puis l'API est redéployée sur Azure Web App si les tests passent.</div>
+        </div>
+        <div class="mlops-card">
+          <div class="mlops-card-title">Azure Application Insights — Monitoring</div>
+          <div class="mlops-card-desc">Chaque prédiction et chaque retour utilisateur sont loggés vers Azure Application Insights. Des alertes email automatiques sont déclenchées en cas de volume anormal de prédictions jugées incorrectes par les utilisateurs.</div>
+        </div>
+        <div class="mlops-card">
+          <div class="mlops-card-title">API Flask — /predict &amp; /feedback</div>
+          <div class="mlops-card-desc">L'API expose deux endpoints : <code>/predict</code> qui reçoit un tweet et retourne le sentiment prédit, et <code>/feedback</code> qui permet à l'utilisateur de signaler une prédiction incorrecte, alimentant ainsi le suivi en production.</div>
+        </div>
+      </div>
+
+      <!-- Interface Streamlit -->
+      <p class="project-section-title">Interface de test — Streamlit</p>
       <p class="project-desc" style="margin-bottom:1.25rem;">
-        Un dashboard <strong>Streamlit</strong> a été développé et déployé afin de présenter interactivement les résultats de la preuve de concept. Il permet de visualiser, pour chaque image du jeu de test, l'image originale, le masque de vérité terrain et les prédictions des deux modèles côte à côte.
+        Une interface locale développée avec <strong>Streamlit</strong> permet de tester l'API de manière interactive. L'utilisateur saisit un tweet en anglais, l'application appelle l'endpoint <code>/predict</code> de l'API déployée sur Azure et affiche le résultat (sentiment positif ou négatif avec son score). En cas de prédiction jugée incorrecte, l'utilisateur peut le signaler via un bouton de feedback, ce qui déclenche un appel à l'endpoint <code>/feedback</code> et envoie une trace vers <strong>Azure Application Insights</strong> pour alimenter le suivi en production.
       </p>
-      <div style="display:flex; flex-direction:column; gap:1rem; margin-bottom:2rem;">
-        <a class="lightbox-trigger" onclick="openLightbox('images/proj9_dashboard1.png')">
-          <img src="images/proj9_dashboard1.png" alt="Dashboard — présentation du dataset" />
+      <div style="max-width:380px; margin: 0 auto 2rem;">
+        <a class="lightbox-trigger" onclick="openLightbox('images/proj7_streamlit.png')">
+          <img src="images/proj7_streamlit.png" alt="Interface Streamlit — détecteur de sentiments" />
         </a>
-        <a class="lightbox-trigger" onclick="openLightbox('images/proj9_dashboard2.png')">
-          <img src="images/proj9_dashboard2.png" alt="Dashboard — sélection d'une image" />
+        <p class="visual-label">Interface Streamlit de test de l'API</p>
+      </div>
+
+      <!-- Visuels MLFlow -->
+      <p class="project-section-title">MLFlow — Suivi des expérimentations</p>
+      <div style="margin-bottom:2rem;">
+        <a class="lightbox-trigger" onclick="openLightbox('images/proj7_mlflow_home.png')">
+          <img src="images/proj7_mlflow_home.png" alt="MLFlow — page d'accueil des expérimentations" />
         </a>
-        <a class="lightbox-trigger" onclick="openLightbox('images/proj9_dashboard3.png')">
-          <img src="images/proj9_dashboard3.png" alt="Dashboard — comparaison des prédictions" />
+        <p class="visual-label">Interface MLFlow — liste des runs</p>
+      </div>
+
+      <!-- Visuels CI/CD & Monitoring -->
+      <p class="project-section-title">Déploiement continu &amp; monitoring</p>
+      <div style="margin-bottom:1.5rem;">
+        <a class="lightbox-trigger" onclick="openLightbox('images/proj7_dashboard.png')">
+          <img src="images/proj7_dashboard.png" alt="Azure Application Insights — dashboard" />
         </a>
+        <p class="visual-label">Dashboard Azure Application Insights</p>
       </div>
 
       <!-- Tech stack -->
       <div class="tech-stack">
-        <span class="tech-tag">PyTorch</span>
-        <span class="tech-tag">Segmentation Models PyTorch</span>
-        <span class="tech-tag">SegFormer (MiT-B2)</span>
-        <span class="tech-tag">DeepLabV3+</span>
-        <span class="tech-tag">Cityscapes</span>
-        <span class="tech-tag">Dice Loss</span>
-        <span class="tech-tag">mIoU</span>
-        <span class="tech-tag">Streamlit</span>
         <span class="tech-tag">Python</span>
+        <span class="tech-tag">TensorFlow / Keras</span>
+        <span class="tech-tag">LSTM</span>
+        <span class="tech-tag">Word2Vec</span>
+        <span class="tech-tag">GloVe</span>
+        <span class="tech-tag">DistilBERT</span>
+        <span class="tech-tag">scikit-learn</span>
+        <span class="tech-tag">MLFlow</span>
+        <span class="tech-tag">Flask</span>
+        <span class="tech-tag">GitHub Actions</span>
+        <span class="tech-tag">Azure Web App</span>
+        <span class="tech-tag">Azure Application Insights</span>
+        <span class="tech-tag">Streamlit</span>
       </div>
 
     </div>

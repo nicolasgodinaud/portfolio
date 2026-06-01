@@ -111,7 +111,7 @@
     }
     .project-tile-number { font-family: var(--mono); font-size: .7rem; color: var(--accent); letter-spacing: .08em; }
     .project-tile-title { font-size: .95rem; font-weight: 600; color: var(--text); line-height: 1.3; }
-    .project-tile-desc { font-size: .82rem; color: var(--text-muted); line-height: 1.5; margin-top: .2rem; }
+    .project-tile-desc { font-size: .82rem; color: var(--text-muted); line-height: 1.5; margin-top: .2rem; text-align: justify; }
     .project-tile-tags { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .5rem; }
     .project-tile-tag { font-family: var(--mono); font-size: .65rem; padding: .15rem .5rem; border-radius: 4px; background: var(--bg3); color: var(--text-muted); border: 1px solid var(--border); }
     .project-tile-arrow { margin-top: auto; padding-top: .75rem; font-size: .8rem; color: var(--accent); }
@@ -152,7 +152,7 @@
         <a href="projet-03.html">
           <span class="dd-num">PROJET 03</span>
           <span class="dd-title">Segmentation pour véhicule autonome</span>
-          <span class="dd-tag">Segmentation · LinkNet · FastAPI</span>
+          <span class="dd-tag">Segmentation · FastAPI</span>
         </a>
         <a href="projet-04.html">
           <span class="dd-num">PROJET 04</span>
@@ -261,6 +261,7 @@
       <span class="project-tile-desc">Étude de faisabilité pour la classification d'images d'articles. Développement d'un modèle supervisé de classification d'images (CNN).</span>
       <div class="project-tile-tags">
         <span class="project-tile-tag">Computer Vision</span>
+        <span class="project-tile-tag">Classification</span>
         <span class="project-tile-tag">CNN</span>
         <span class="project-tile-tag">Transfer Learning</span>
       </div>
@@ -271,8 +272,8 @@
       <span class="project-tile-title">Segmentation d'images pour véhicule autonome</span>
       <span class="project-tile-desc">Benchmark de 5 architectures de segmentation sémantique sur des images issues de véhicules autonomes en milieu urbain. Déploiement du modèle le plus optimal sur AWS EC2.</span>
       <div class="project-tile-tags">
+        <span class="project-tile-tag">Computer Vision</span>
         <span class="project-tile-tag">Segmentation</span>
-        <span class="project-tile-tag">LinkNet</span>
         <span class="project-tile-tag">FastAPI</span>
         <span class="project-tile-tag">AWS</span>
       </div>
@@ -280,9 +281,10 @@
     </a>
     <a class="project-tile" href="projet-04.html">
       <span class="project-tile-number">PROJET 04</span>
-      <span class="project-tile-title">Preuve de concept — SegFormer</span>
-      <span class="project-tile-desc">Veille thématique et benchmark Transformer vs CNN appliqués à la segmentation d'images : SegFormer-B2 vs DeepLabV3+ sur Cityscapes, avec déploiement d'un dashboard Streamlit.</span>
+      <span class="project-tile-title">Développement d'une preuve de concept</span>
+      <span class="project-tile-desc">Veille thématique et benchmark Transformer vs CNN appliqués à la segmentation d'images : modèle SegFormer vs DeepLabV3+. Déploiement d'un dashboard Streamlit.</span>
       <div class="project-tile-tags">
+        <span class="project-tile-tag">Computer Vision</span>
         <span class="project-tile-tag">Transformers</span>
         <span class="project-tile-tag">SegFormer</span>
         <span class="project-tile-tag">PyTorch</span>
@@ -293,11 +295,13 @@
     <a class="project-tile" href="projet-05.html">
       <span class="project-tile-number">PROJET 05</span>
       <span class="project-tile-title">Analyse de sentiments de tweets</span>
-      <span class="project-tile-desc">Prédiction du sentiment de tweets via LSTM, CNN et DistilBERT, avec déploiement continu d'une API Flask sur Azure et monitoring MLOps.</span>
+      <span class="project-tile-desc">Prédiction du sentiment de tweets via LSTM, CNN et DistilBERT. Déploiement continu d'une API Flask sur Azure et monitoring MLOps.</span>
       <div class="project-tile-tags">
         <span class="project-tile-tag">NLP</span>
         <span class="project-tile-tag">LSTM</span>
+        <span class="project-tile-tag">BERT</span>
         <span class="project-tile-tag">MLOps</span>
+        <span class="project-tile-tag">CI/CD</span>
         <span class="project-tile-tag">Azure</span>
       </div>
        <span class="project-tile-arrow">Voir le projet →</span>

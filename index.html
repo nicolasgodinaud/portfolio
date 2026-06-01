@@ -64,9 +64,9 @@
     .nav-dropdown-menu .dd-tag { font-size: .75rem; color: var(--text-muted); }
 
     .hero {
-      min-height: 100vh; display: flex; flex-direction: column;
+      display: flex; flex-direction: column;
       justify-content: center; align-items: flex-start;
-      padding: 6rem 10vw 4rem; position: relative; overflow: hidden;
+      padding: 8rem 10vw 1rem; position: relative; overflow: hidden;
     }
     .hero::before {
       content: ''; position: absolute; inset: 0;
@@ -78,7 +78,7 @@
     .hero-eyebrow { font-family: var(--mono); font-size: .85rem; color: var(--accent); letter-spacing: .12em; text-transform: uppercase; margin-bottom: 1rem; }
     .hero h1 { font-size: clamp(2.4rem, 5vw, 4rem); font-weight: 700; line-height: 1.15; margin-bottom: .75rem; }
     .hero h1 span { color: var(--accent); }
-    .hero-subtitle { font-size: clamp(1rem, 2vw, 1.25rem); color: var(--text-muted); max-width: 560px; margin-bottom: 2.5rem; }
+    .hero-subtitle { font-size: clamp(1rem, 2vw, 1.25rem); color: var(--text-muted); max-width: 560px; margin-bottom: 0; text-align: justify; }
     .hero-tags { display: flex; flex-wrap: wrap; gap: .75rem; margin-bottom: 3rem; }
     .hero-tag { font-family: var(--mono); font-size: .78rem; padding: .3rem .75rem; border-radius: 20px; border: 1px solid var(--border); color: var(--text-muted); background: var(--bg2); }
     .hero-cta {
@@ -89,7 +89,7 @@
     }
     .hero-cta:hover { background: #1d4ed8; transform: translateY(-1px); text-decoration: none; }
 
-    .section { max-width: 1100px; margin: 0 auto; padding: 5rem 2rem; }
+    .section { max-width: 1100px; margin: 0 auto; padding: 1.25rem 2rem; }
     .section-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem; }
     .section-number { font-family: var(--mono); font-size: .8rem; color: var(--accent); }
     .section-title { font-size: 1.6rem; font-weight: 700; }
@@ -115,6 +115,15 @@
     .project-tile-tags { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .5rem; }
     .project-tile-tag { font-family: var(--mono); font-size: .65rem; padding: .15rem .5rem; border-radius: 4px; background: var(--bg3); color: var(--text-muted); border: 1px solid var(--border); }
     .project-tile-arrow { margin-top: auto; padding-top: .75rem; font-size: .8rem; color: var(--accent); }
+
+    .about-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; }
+    @media (max-width: 720px) { .about-cols { grid-template-columns: 1fr; } }
+    .about-text { font-size: .92rem; color: var(--text-muted); line-height: 1.8; text-align: justify; }
+    .about-text p + p { margin-top: 1rem; }
+    .skills-group { margin-bottom: 1.25rem; }
+    .skills-group-title { font-family: var(--mono); font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-bottom: .6rem; }
+    .skills-tags { display: flex; flex-wrap: wrap; gap: .4rem; }
+    .skill-tag { font-family: var(--mono); font-size: .75rem; padding: .25rem .65rem; border-radius: 6px; border: 1px solid var(--border); color: var(--text-muted); background: var(--bg3); }
 
     footer { border-top: 1px solid var(--border); text-align: center; padding: 2.5rem; font-size: .825rem; color: var(--text-muted); font-family: var(--mono); background: var(--bg2); }
     ::-webkit-scrollbar { width: 6px; }
@@ -157,7 +166,6 @@
         </a>
       </div>
     </div>
-    
   </div>
 </nav>
 
@@ -165,35 +173,82 @@
   <div class="hero-eyebrow">Ingénieur IA</div>
   <h1>Nicolas <span>Godinaud</span></h1>
   <p class="hero-subtitle">
-    Ingénieur IA spécialisé en Machine Learning et Deep Learning.
-    Ce portfolio présente les projets réalisés lors de ma formation OpenClassrooms, couvrant divers domaines de l'intelligence artificielle.
+    Docteur en simulation numérique, je me suis récemment spécialisé en intelligence artificielle.
+    Je conçois et déploie des modèles de Machine Learning et Deep Learning pour diverses applications concrètes.
+    Ce portfolio présente les principaux <a href="#projets">projets</a> réalisés lors de ma formation d'Ingénieur IA chez OpenClassrooms.
   </p>
-  <div class="hero-tags">
-    <span class="hero-tag">Supervised Learning</span>
-    <span class="hero-tag">Deep Learning</span>
-    <span class="hero-tag">NLP</span>
-    <span class="hero-tag">Computer Vision</span>
-    <span class="hero-tag">Python</span>
-    <span class="hero-tag">scikit-learn</span>
-    <span class="hero-tag">TensorFlow</span>
-  </div>
-  <a class="hero-cta" href="#projets">Voir les projets ↓</a>
 </section>
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-number">01</span>
+    <h2 class="section-title">À propos</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="about-cols">
+    <div>
+      <div class="about-text">
+        <p>Ingénieur en mécanique des fluides numérique de formation (ENSEIRB-MATMECA), j'ai réalisé une thèse CIFRE en simulation numérique d'écoulements de plasma, soutenue en 2023 à Aix-Marseille Université. Ces années de recherche m'ont appris la rigueur scientifique, le goût de l'investigation et la capacité à travailler sur des problèmes complexes à l'interface de plusieurs disciplines.</p>
+        <p>Souhaitant élargir mon champ de compétences tout en restant dans un contexte de R&D, j'ai choisi de me spécialiser en intelligence artificielle via une formation diplômante (AI Engineer, OpenClassrooms). J'y ai développé une expertise en Machine Learning, Deep Learning, Computer Vision, NLP et MLOps, appliquée à travers une dizaine de projets couvrant des domaines variés.</p>
+        <p>Je suis particulièrement attiré par les applications de l'IA à des problèmes scientifiques et techniques concrets, domaine dans lequel mon double profil ingénieur-chercheur constitue un atout.</p>
+      </div>
+    </div>
+    <div>
+      <div class="skills-group">
+        <div class="skills-group-title">Machine &amp; Deep Learning</div>
+        <div class="skills-tags">
+          <span class="skill-tag">scikit-learn</span>
+          <span class="skill-tag">TensorFlow</span>
+          <span class="skill-tag">PyTorch</span>
+          <span class="skill-tag">CNN</span>
+          <span class="skill-tag">RNN / LSTM</span>
+          <span class="skill-tag">Transformers</span>
+          <span class="skill-tag">NLP</span>
+          <span class="skill-tag">Computer Vision</span>
+        </div>
+      </div>
+      <div class="skills-group">
+        <div class="skills-group-title">Déploiement &amp; MLOps</div>
+        <div class="skills-tags">
+          <span class="skill-tag">Flask</span>
+          <span class="skill-tag">FastAPI</span>
+          <span class="skill-tag">Streamlit</span>
+          <span class="skill-tag">MLFlow</span>
+          <span class="skill-tag">GitHub Actions</span>
+          <span class="skill-tag">Azure</span>
+          <span class="skill-tag">AWS</span>
+        </div>
+      </div>
+      <div class="skills-group">
+        <div class="skills-group-title">Langages &amp; Data</div>
+        <div class="skills-tags">
+          <span class="skill-tag">Python</span>
+          <span class="skill-tag">C++</span>
+          <span class="skill-tag">SQL</span>
+          <span class="skill-tag">Pandas</span>
+          <span class="skill-tag">NumPy</span>
+          <span class="skill-tag">PySpark</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div id="projets" class="section">
   <div class="section-header">
-    <span class="section-number">01</span>
-    <h2 class="section-title">Projets</h2>
+    <span class="section-number">02</span>
+    <h2 class="section-title">Liste des projets</h2>
     <div class="section-line"></div>
   </div>
 
   <div class="project-tiles">
     <a class="project-tile" href="projet-01.html">
       <span class="project-tile-number">PROJET 01</span>
-      <span class="project-tile-title">Modèle de scoring crédit</span>
-      <span class="project-tile-desc">Conception d'un outil de scoring crédit basé sur XGBoost avec optimisation du seuil de décision selon un coût métier personnalisé.</span>
+      <span class="project-tile-title">Modèle de scoring pour l'octroi de crédit</span>
+      <span class="project-tile-desc">Conception d'un outil de scoring basé sur différents modèles de machine learning.</span>
       <div class="project-tile-tags">
         <span class="project-tile-tag">ML supervisé</span>
+        <span class="project-tile-tag">Regression logistique</span>
         <span class="project-tile-tag">XGBoost</span>
         <span class="project-tile-tag">SHAP</span>
         <span class="project-tile-tag">scikit-learn</span>
@@ -202,11 +257,10 @@
     </a>
     <a class="project-tile" href="projet-02.html">
       <span class="project-tile-number">PROJET 02</span>
-      <span class="project-tile-title">Classification automatique d'articles e-commerce</span>
-      <span class="project-tile-desc">Étude de faisabilité NLP + Computer Vision sur 906 produits Flipkart, suivie d'un modèle CNN supervisé avec Transfer Learning.</span>
+      <span class="project-tile-title">Classification automatique d'images d'articles e-commerce</span>
+      <span class="project-tile-desc">Étude de faisabilité pour la classification d'images d'articles. Développement d'un modèle supervisé de classification d'images (CNN).</span>
       <div class="project-tile-tags">
         <span class="project-tile-tag">Computer Vision</span>
-        <span class="project-tile-tag">NLP</span>
         <span class="project-tile-tag">CNN</span>
         <span class="project-tile-tag">Transfer Learning</span>
       </div>
@@ -215,7 +269,7 @@
     <a class="project-tile" href="projet-03.html">
       <span class="project-tile-number">PROJET 03</span>
       <span class="project-tile-title">Segmentation d'images pour véhicule autonome</span>
-      <span class="project-tile-desc">Benchmark de 5 architectures de segmentation sémantique sur Cityscapes, avec déploiement du modèle LinkNet via FastAPI sur AWS EC2.</span>
+      <span class="project-tile-desc">Benchmark de 5 architectures de segmentation sémantique sur des images issues de véhicules autonomes en milieu urbain. Déploiement du modèle le plus optimal sur AWS EC2.</span>
       <div class="project-tile-tags">
         <span class="project-tile-tag">Segmentation</span>
         <span class="project-tile-tag">LinkNet</span>
@@ -227,7 +281,7 @@
     <a class="project-tile" href="projet-04.html">
       <span class="project-tile-number">PROJET 04</span>
       <span class="project-tile-title">Preuve de concept — SegFormer</span>
-      <span class="project-tile-desc">Veille thématique et benchmark Transformer vs CNN : SegFormer-B2 vs DeepLabV3+ sur Cityscapes, avec déploiement d'un dashboard Streamlit.</span>
+      <span class="project-tile-desc">Veille thématique et benchmark Transformer vs CNN appliqués à la segmentation d'images : SegFormer-B2 vs DeepLabV3+ sur Cityscapes, avec déploiement d'un dashboard Streamlit.</span>
       <div class="project-tile-tags">
         <span class="project-tile-tag">Transformers</span>
         <span class="project-tile-tag">SegFormer</span>

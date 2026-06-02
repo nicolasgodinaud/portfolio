@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Projet 05 — Analyse de sentiments de tweets</title>
+  <title>Projet 05 — Modèle de scoring crédit</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -26,9 +26,11 @@
       background: rgba(255,255,255,.92); backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,.06);
     }
-    .nav-home { font-size: .875rem; color: var(--text-muted); transition: color .2s; }
-    .nav-home:hover { color: var(--text); text-decoration: none; }
+    .nav-home { font-size: .875rem; color: var(--text-muted); transition: color .2s; } .nav-home:hover { color: var(--text); text-decoration: none; }
     .nav-links { display: flex; gap: 2rem; }
+    .nav-links a { font-size: .875rem; color: var(--text-muted); transition: color .2s; }
+    .nav-links a:hover { color: var(--text); text-decoration: none; }
+    /* Dropdown */
     .nav-dropdown { position: relative; }
     .nav-dropdown-btn {
       font-size: .875rem; color: var(--text-muted); background: none; border: none;
@@ -55,11 +57,19 @@
     .nav-dropdown-menu .dd-tag { font-size: .75rem; color: var(--text-muted); }
 
     .page-wrapper { max-width: 1100px; margin: 0 auto; padding: 5rem 2rem 4rem; }
-    .back-link { display: inline-flex; align-items: center; gap: .4rem; font-family: var(--mono); font-size: .78rem; color: var(--text-muted); margin-bottom: 2rem; transition: color .2s; }
+
+    .back-link {
+      display: inline-flex; align-items: center; gap: .4rem;
+      font-family: var(--mono); font-size: .78rem; color: var(--text-muted);
+      margin-bottom: 2rem; transition: color .2s;
+    }
     .back-link:hover { color: var(--accent); text-decoration: none; }
 
     .project-card { background: var(--bg); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,.05); }
-    .project-header { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 1rem; padding: 2rem 2rem 1.5rem; border-bottom: 1px solid var(--border); }
+    .project-header {
+      display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap;
+      gap: 1rem; padding: 2rem 2rem 1.5rem; border-bottom: 1px solid var(--border);
+    }
     .project-meta { display: flex; flex-direction: column; gap: .4rem; }
     .project-number { font-family: var(--mono); font-size: .75rem; color: var(--accent); letter-spacing: .1em; }
     .project-title { font-size: 1.4rem; font-weight: 700; line-height: 1.2; }
@@ -98,35 +108,22 @@
 
     .model-table { width: 100%; border-collapse: collapse; font-size: .85rem; margin-bottom: 1.5rem; }
     .model-table th { font-family: var(--mono); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); text-align: left; padding: .6rem 1rem; border-bottom: 1px solid var(--border); }
-    .model-table td { padding: .65rem 1rem; border-bottom: 1px solid rgba(226,232,240,.8); color: var(--text-muted); }
+    .model-table td { padding: .65rem 1rem; border-bottom: 1px solid rgba(48,54,61,.5); color: var(--text-muted); }
     .model-table tr:last-child td { border-bottom: none; }
+    .model-table tr.best td { color: var(--text); }
+    .model-table tr.best td:first-child { color: var(--accent2); font-weight: 600; }
     .model-table .score { font-family: var(--mono); }
+    .model-table .good  { color: var(--accent2); font-weight: 600; }
     .model-table .best-badge { display: inline-block; font-size: .65rem; font-family: var(--mono); padding: .15rem .45rem; border-radius: 4px; background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; margin-left: .5rem; vertical-align: middle; }
 
     .interp-box { background: var(--bg2); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 1.25rem; margin-bottom: 1.5rem; font-size: .875rem; color: var(--text-muted); line-height: 1.7; text-align: justify; }
 
-    .mlops-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
-    @media (max-width: 720px) { .mlops-grid { grid-template-columns: 1fr; } }
-    .mlops-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.25rem; }
-    .mlops-card-title { font-family: var(--mono); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin-bottom: .5rem; }
-    .mlops-card-desc { font-size: .83rem; color: var(--text-muted); line-height: 1.6; text-align: justify; }
-
-    .visual-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
-    @media (max-width: 720px) { .visual-grid { grid-template-columns: 1fr; } }
-    .visual-label { font-family: var(--mono); font-size: .7rem; color: var(--text-muted); margin-top: .4rem; text-align: center; }
-
-    .lightbox-trigger { cursor: zoom-in; display: block; position: relative; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
-    .lightbox-trigger::after { content: '⤢'; position: absolute; bottom: .5rem; right: .5rem; background: rgba(255,255,255,.85); color: var(--accent); font-size: .8rem; padding: .2rem .4rem; border-radius: 4px; opacity: 0; transition: opacity .2s; pointer-events: none; }
-    .lightbox-trigger:hover::after { opacity: 1; }
-    .lightbox-trigger img { display: block; width: 100%; }
-
+    footer { border-top: 1px solid var(--border); text-align: center; padding: 2.5rem; font-size: .825rem; color: var(--text-muted); font-family: var(--mono); background: var(--bg2); }
     #lightbox { display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,.75); backdrop-filter: blur(4px); align-items: center; justify-content: center; cursor: zoom-out; }
     #lightbox.open { display: flex; }
     #lightbox img { max-width: 90vw; max-height: 90vh; border-radius: 10px; box-shadow: 0 20px 60px rgba(0,0,0,.4); cursor: default; }
     #lightbox-close { position: fixed; top: 1.25rem; right: 1.5rem; color: white; font-size: 1.75rem; line-height: 1; cursor: pointer; opacity: .8; transition: opacity .2s; background: none; border: none; }
     #lightbox-close:hover { opacity: 1; }
-
-    footer { border-top: 1px solid var(--border); text-align: center; padding: 2.5rem; font-size: .825rem; color: var(--text-muted); font-family: var(--mono); background: var(--bg2); }
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: var(--bg2); }
     ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
@@ -134,7 +131,7 @@
 </head>
 <body>
 
-<div id="lightbox" onclick="closeLightbox()">
+<div id="lightbox">
   <button id="lightbox-close" onclick="closeLightbox()">✕</button>
   <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation()" />
 </div>
@@ -147,237 +144,153 @@
       <div class="nav-dropdown-menu" id="projets-menu">
         <a href="projet-01.html">
           <span class="dd-num">PROJET 01</span>
-          <span class="dd-title">Modèle de scoring crédit</span>
-          <span class="dd-tag">ML supervisé · XGBoost · SHAP</span>
-        </a>
-        <a href="projet-02.html">
-          <span class="dd-num">PROJET 02</span>
           <span class="dd-title">Classification d'articles e-commerce</span>
           <span class="dd-tag">Computer Vision · NLP · CNN</span>
         </a>
+        <a href="projet-02.html">
+          <span class="dd-num">PROJET 02</span>
+          <span class="dd-title">Segmentation pour véhicule autonome</span>
+          <span class="dd-tag">Computer Vision · Segmentation · FastAPI</span>
+        </a>
         <a href="projet-03.html">
           <span class="dd-num">PROJET 03</span>
-          <span class="dd-title">Segmentation pour véhicule autonome</span>
-          <span class="dd-tag">Segmentation · LinkNet · FastAPI</span>
+          <span class="dd-title">Preuve de concept — SegFormer</span>
+          <span class="dd-tag">Computer Vision · Transformers · Streamlit</span>
         </a>
         <a href="projet-04.html">
           <span class="dd-num">PROJET 04</span>
-          <span class="dd-title">Preuve de concept — SegFormer</span>
-          <span class="dd-tag">Transformers · SegFormer · Streamlit</span>
-        </a>
-        <a href="projet-05.html">
-          <span class="dd-num">PROJET 05</span>
           <span class="dd-title">Analyse de sentiments de tweets</span>
           <span class="dd-tag">NLP · LSTM · MLOps · Azure</span>
         </a>
+        <a href="projet-05.html">
+          <span class="dd-num">PROJET 05</span>
+          <span class="dd-title">Modèle de scoring crédit</span>
+          <span class="dd-tag">ML supervisé · XGBoost · SHAP</span>
+        </a>
       </div>
     </div>
+    
   </div>
 </nav>
 
 <div class="page-wrapper">
 
-  <div class="project-card">
+
+  <article class="project-card">
     <div class="project-header">
       <div class="project-meta">
-        <span class="project-number">PROJET 05</span>
-        <h1 class="project-title">Analyse de sentiments de tweets</h1>
-        <p class="project-context">NLP · Deep Learning · MLOps · Déploiement continu sur Azure</p>
+        <span class="project-number">PROJET 05 · MACHINE LEARNING SUPERVISÉ</span>
+        <h1 class="project-title">Modèle de scoring crédit pour l'octroi de crédits à la consommation</h1>
+        <span class="project-context">Algorithmes de classification pour l'octroi de crédits à la consommation</span>
         <div class="project-badges">
-          <span class="badge badge-blue">NLP</span>
-          <span class="badge badge-blue">LSTM</span>
-          <span class="badge badge-purple">DistilBERT</span>
-          <span class="badge badge-green">MLFlow</span>
-          <span class="badge badge-orange">Azure</span>
-          <span class="badge badge-red">MLOps</span>
-          <span class="badge badge-green">CI/CD</span>
+          <span class="badge badge-blue">Classification binaire</span>
+          <span class="badge badge-green">Feature Engineering</span>
+          <span class="badge badge-orange">SHAP</span>
+          <span class="badge badge-purple">Optimisation métier</span>
         </div>
       </div>
     </div>
 
     <div class="project-body">
 
-      <!-- Contexte & Démarche -->
       <div class="project-cols">
         <div>
-          <p class="project-section-title">Contexte &amp; problématique</p>
+          <p class="project-section-title">Contexte & Problématique</p>
           <p class="project-desc">
-            Air Paradis, compagnie aérienne confrontée à des bad buzz récurrents sur les réseaux sociaux, mandate le cabinet MIC pour développer un prototype d'IA capable de <strong>prédire automatiquement le sentiment associé à un tweet</strong> (positif ou négatif). L'objectif est de détecter en temps réel les signaux négatifs afin de réagir rapidement avant qu'une crise ne s'amplifie.
+            Au cours de ce projet, on se positionne en tant que Data Scientist travaillant pour une société financière fictive. L'objectif est de concevoir un outil de <strong>scoring crédit</strong> capable de calculer la probabilité de remboursement d'un client et de classifier automatiquement les demandes (crédit accordé / refusé).
           </p>
           <br />
           <p class="project-desc">
-            Le dataset utilisé est <a href="https://www.kaggle.com/datasets/kazanova/sentiment140" target="_blank"><strong>Sentiment140</strong></a>, un jeu de données open source de 1,6 million de tweets annotés binairement (sentiment négatif ou positif). Trois approches de modélisation ont été comparées, de la plus simple à la plus avancée, avec une démarche <strong>MLOps</strong> complète intégrant tracking des expérimentations, versioning, déploiement continu et monitoring en production.
+            Le modèle doit être facilement <strong>interprétable</strong> pour les chargés de relation client, et tenir compte d'un <strong>déséquilibre de coût métier</strong> : un faux négatif (crédit accordé à un mauvais payeur) est 10× plus coûteux qu'un faux positif (bon client refusé).
           </p>
         </div>
         <div>
           <p class="project-section-title">Démarche</p>
           <ul class="steps">
-            <li><span>Prétraitement des tweets : nettoyage, tokenisation, encodage</span></li>
-            <li><span>Entraînement d'un modèle <strong>baseline</strong> (régression logistique) pour référence</span></li>
-            <li><span>Entraînement de modèles avancés : <strong>LSTM + Word2Vec</strong>, <strong>LSTM + GloVe</strong>, <strong>CNN + Word2Vec</strong></span></li>
-            <li><span>Fine-tuning de <strong>DistilBERT</strong> pour évaluer l'apport des Transformers</span></li>
-            <li><span>Tracking de toutes les expérimentations avec <strong>MLFlow</strong> (métriques, artefacts, modèles)</span></li>
-            <li><span>Déploiement de l'API Flask sur <strong>Azure Web App</strong> via pipeline CI/CD (GitHub Actions)</span></li>
-            <li><span>Monitoring en production avec <strong>Azure Application Insights</strong> (traces, alertes email)</span></li>
-            <li><span>Développement d'une interface de test <strong>Streamlit</strong> permettant de soumettre un tweet et de valider ou corriger la prédiction</span></li>
+            <li><span>Analyse exploratoire du dataset <a href="https://www.kaggle.com/competitions/home-credit-default-risk/data" target="_blank">Home Credit Default Risk</a> : outliers, valeurs manquantes, distributions</span></li>
+            <li>Feature engineering : création de nouvelles variables pertinentes (taux de paiement, retards moyens, etc.)</li>
+            <li>Conception d'un score métier pénalisant les faux négatifs (×10). Objectif des modèles : minimiser le score métier</li>
+            <li>Benchmark de 5 modèles avec pipelines scikit-learn, Cross-Validation 5-folds et GridSearchCV</li>
+            <li>Gestion du déséquilibre de classes : beaucoup plus de crédits accordés que refusés dans la base de données</li>
+            <li>Optimisation du seuil de décision par minimisation du coût métier</li>
+            <li>Interprétabilité globale et locale du modèle avec SHAP</li>
           </ul>
         </div>
       </div>
 
-      <!-- Comparaison des modèles -->
+      <p class="project-section-title">Pipeline de modélisation</p>
+      <div class="pipeline">
+        <span class="pipe-step">EDA</span><span class="pipe-arrow">→</span>
+        <span class="pipe-step">Feature Engineering</span><span class="pipe-arrow">→</span>
+        <span class="pipe-step">Preprocessing</span><span class="pipe-arrow">→</span>
+        <span class="pipe-step">Rééquilibrage classes</span><span class="pipe-arrow">→</span>
+        <span class="pipe-step">GridSearchCV (5-folds)</span><span class="pipe-arrow">→</span>
+        <span class="pipe-step">Optimisation seuil</span><span class="pipe-arrow">→</span>
+        <span class="pipe-step">Interprétation modèle</span>
+      </div>
+
       <p class="project-section-title">Comparaison des modèles</p>
       <table class="model-table">
         <thead>
-          <tr>
-            <th>Modèle</th>
-            <th>Type</th>
-            <th>Test Accuracy</th>
-          </tr>
+          <tr><th>Modèle</th><th>Score métier ↓</th><th>AUC-ROC ↑</th></tr>
         </thead>
         <tbody>
-          <tr>
-            <td>Régression logistique <span class="best-badge">Baseline</span></td>
-            <td>ML classique</td>
-            <td class="score">0.789</td>
-            </tr>
-          <tr>
-            <td>CNN + Word2Vec</td>
-            <td>Deep Learning</td>
-            <td class="score">0.797</td>
-            </tr>
-          <tr>
-            <td>LSTM + GloVe</td>
-            <td>Deep Learning</td>
-            <td class="score">0.803</td>
-            </tr>
-          <tr>
-            <td>LSTM + Word2Vec <span class="best-badge" style="background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe;">★ DÉPLOYÉ</span></td>
-            <td>Deep Learning</td>
-            <td class="score">0.806</td>
-            </tr>
-          <tr>
-            <td>DistilBERT</td>
-            <td>Transformer</td>
-            <td class="score">0.815</td>
-            </tr>
+          <tr><td>Dummy Classifier</td><td class="score">0.467</td><td class="score">0.500</td></tr>
+          <tr><td>Random Forest Classifier</td><td class="score">0.332</td><td class="score">0.724</td></tr>
+          <tr><td>Régression Logistique</td><td class="score">0.315</td><td class="score">0.749</td></tr>
+          <tr><td>XGBoost Classifier</td><td class="score">0.313</td><td class="score">0.751</td></tr>
+          <tr class="best">
+            <td>XGBoost + Feature Engineering <span class="best-badge">★ MEILLEUR</span></td>
+            <td class="score good">0.303</td><td class="score good">0.765</td>
+          </tr>
         </tbody>
       </table>
 
+      <p class="project-section-title">Résultats clés</p>
       <div class="results-grid">
         <div class="result-card">
-          <div class="result-label">Accuracy LSTM déployé</div>
-          <div class="result-value">80.6%</div>
-          <div class="result-sub">LSTM + Word2Vec sur test set</div>
+          <div class="result-label">Score métier</div>
+          <div class="result-value">0.303</div>
+          <div class="result-sub">XGBoost + FE (vs 0.467 baseline)</div>
         </div>
         <div class="result-card">
-          <div class="result-label">AUC LSTM déployé</div>
-          <div class="result-value">0.889</div>
-          <div class="result-sub">meilleur score AUC</div>
-        </div>
-        <div class="result-card">
-          <div class="result-label">Accuracy DistilBERT</div>
-          <div class="result-value">81.5%</div>
-          <div class="result-sub">+0.9% vs LSTM, coût élevé</div>
-        </div>
-        <div class="result-card">
-          <div class="result-label">Dataset</div>
-          <div class="result-value">1.6M</div>
-          <div class="result-sub">tweets annotés (Sentiment140)</div>
+          <div class="result-label">AUC-ROC</div>
+          <div class="result-value">0.765</div>
+          <div class="result-sub">XGBoost + Feature Engineering</div>
         </div>
       </div>
 
       <div class="interp-box">
-        Le modèle <strong>LSTM + Word2Vec</strong> a été retenu pour le déploiement : il offre le meilleur compromis entre performance (AUC 0.889) et coût computationnel. DistilBERT obtient une accuracy légèrement supérieure (+0.9%) mais au prix d'un temps d'entraînement et d'inférence bien plus élevé, peu adapté à un déploiement embarqué sur une solution cloud gratuite. La régression logistique sert de baseline solide, avec une accuracy de 78.9% obtenue en quelques secondes d'entraînement.
+        <p class="project-section-title" style="margin-bottom:.5rem;">Interprétabilité du modèle : utilisation de la librairie Python SHAP</p>
+        <p class="project-desc">
+          <strong style="color:var(--text);">Globale</strong> : les variables les plus influentes sur l'ensemble du jeu de données sont <code>EXT_SOURCE_2</code>, <code>EXT_SOURCE_3</code> (scores externes fournis dans le jeu de données), ainsi que des variables créées lors du feature engineering, telles que <code>PAYMENT_RATE</code> (taux de remboursement) et <code>INSTAL_DPD_MEAN</code> (retards moyens).
+        </p>
+        <br />
+        <p class="project-desc">
+          <strong style="color:var(--text);">Locale</strong> : les valeurs SHAP permettent d'expliquer chaque prédiction individuelle — les variables en faveur du remboursement (classe 0) et celles signalant un risque de défaut (classe 1).
+        </p>
       </div>
 
-      <!-- Pipeline -->
-      <p class="project-section-title">Pipeline de modélisation</p>
-      <div class="pipeline">
-        <span class="pipe-step">Sentiment140 (1.6M tweets)</span>
-        <span class="pipe-arrow">→</span>
-        <span class="pipe-step">Nettoyage &amp; tokenisation</span>
-        <span class="pipe-arrow">→</span>
-        <span class="pipe-step">Word embeddings</span>
-        <span class="pipe-arrow">→</span>
-        <span class="pipe-step">Entraînement LSTM</span>
-        <span class="pipe-arrow">→</span>
-        <span class="pipe-step">MLFlow tracking</span>
-        <span class="pipe-arrow">→</span>
-        <span class="pipe-step">API Flask</span>
-        <span class="pipe-arrow">→</span>
-        <span class="pipe-step">Azure Web App</span>
-      </div>
-
-      <!-- MLOps -->
-      <p class="project-section-title">Démarche MLOps</p>
-      <div class="mlops-grid">
-        <div class="mlops-card">
-          <div class="mlops-card-title">MLFlow — Tracking &amp; stockage</div>
-          <div class="mlops-card-desc">Toutes les expérimentations sont enregistrées dans MLFlow : métriques (accuracy, AUC), hyperparamètres, artefacts (modèles, tokenizers). Permet de comparer visuellement les runs et de centraliser le stockage des modèles.</div>
-        </div>
-        <div class="mlops-card">
-          <div class="mlops-card-title">GitHub Actions — CI/CD</div>
-          <div class="mlops-card-desc">Un pipeline de déploiement continu est mis en place via GitHub Actions : à chaque push sur la branche principale, les tests unitaires sont exécutés automatiquement, puis l'API est redéployée sur Azure Web App si les tests passent.</div>
-        </div>
-        <div class="mlops-card">
-          <div class="mlops-card-title">Azure Application Insights — Monitoring</div>
-          <div class="mlops-card-desc">Chaque prédiction et chaque retour utilisateur sont loggés vers Azure Application Insights. Des alertes email automatiques sont déclenchées en cas de volume anormal de prédictions jugées incorrectes par les utilisateurs.</div>
-        </div>
-        <div class="mlops-card">
-          <div class="mlops-card-title">API Flask — /predict &amp; /feedback</div>
-          <div class="mlops-card-desc">L'API expose deux endpoints : <code>/predict</code> qui reçoit un tweet et retourne le sentiment prédit, et <code>/feedback</code> qui permet à l'utilisateur de signaler une prédiction incorrecte, alimentant ainsi le suivi en production.</div>
-        </div>
-      </div>
-
-      <!-- Interface Streamlit -->
-      <p class="project-section-title">Interface de test — Streamlit</p>
-      <p class="project-desc" style="margin-bottom:1.25rem;">
-        Une interface locale développée avec <strong>Streamlit</strong> permet de tester l'API de manière interactive. L'utilisateur saisit un tweet en anglais, l'application appelle l'endpoint <code>/predict</code> de l'API déployée sur Azure et affiche le résultat (sentiment positif ou négatif avec son score). En cas de prédiction jugée incorrecte, l'utilisateur peut le signaler via un bouton de feedback, ce qui déclenche un appel à l'endpoint <code>/feedback</code> et envoie une trace vers <strong>Azure Application Insights</strong> pour alimenter le suivi en production.
-      </p>
-      <div style="max-width:380px; margin: 0 auto 2rem;">
-        <a class="lightbox-trigger" onclick="openLightbox('images/proj7_streamlit.png')">
-          <img src="images/proj7_streamlit.png" alt="Interface Streamlit — détecteur de sentiments" />
-        </a>
-        <p class="visual-label">Interface Streamlit de test de l'API</p>
-      </div>
-
-      <!-- Visuels MLFlow -->
-      <p class="project-section-title">MLFlow — Suivi des expérimentations</p>
-      <div style="margin-bottom:2rem;">
-        <a class="lightbox-trigger" onclick="openLightbox('images/proj7_mlflow_home.png')">
-          <img src="images/proj7_mlflow_home.png" alt="MLFlow — page d'accueil des expérimentations" />
-        </a>
-        <p class="visual-label">Interface MLFlow — liste des runs</p>
-      </div>
-
-      <!-- Visuels CI/CD & Monitoring -->
-      <p class="project-section-title">Déploiement continu &amp; monitoring</p>
-      <div style="margin-bottom:1.5rem;">
-        <a class="lightbox-trigger" onclick="openLightbox('images/proj7_dashboard.png')">
-          <img src="images/proj7_dashboard.png" alt="Azure Application Insights — dashboard" />
-        </a>
-        <p class="visual-label">Dashboard Azure Application Insights</p>
-      </div>
-
-      <!-- Tech stack -->
       <div class="tech-stack">
         <span class="tech-tag">Python</span>
-        <span class="tech-tag">TensorFlow / Keras</span>
-        <span class="tech-tag">LSTM</span>
-        <span class="tech-tag">Word2Vec</span>
-        <span class="tech-tag">GloVe</span>
-        <span class="tech-tag">DistilBERT</span>
         <span class="tech-tag">scikit-learn</span>
-        <span class="tech-tag">MLFlow</span>
-        <span class="tech-tag">Flask</span>
-        <span class="tech-tag">GitHub Actions</span>
-        <span class="tech-tag">Azure Web App</span>
-        <span class="tech-tag">Azure Application Insights</span>
-        <span class="tech-tag">Streamlit</span>
+        <span class="tech-tag">XGBoost</span>
+        <span class="tech-tag">imbalanced-learn</span>
+        <span class="tech-tag">SHAP</span>
+        <span class="tech-tag">pandas</span>
+        <span class="tech-tag">numpy</span>
+        <span class="tech-tag">matplotlib</span>
+        <span class="tech-tag">seaborn</span>
+        <span class="tech-tag">GridSearchCV</span>
+        <span class="tech-tag">RandomizedSearchCV</span>
+        <span class="tech-tag">Pipeline</span>
+        <span class="tech-tag">SMOTE</span>
+        <span class="tech-tag">Jupyter Notebook</span>
       </div>
 
     </div>
-  </div>
+  </article>
+
 </div>
 
 <footer>
@@ -385,20 +298,16 @@
 </footer>
 
 <script>
+  function openLightbox(src) { document.getElementById('lightbox-img').src = src; document.getElementById('lightbox').classList.add('open'); document.body.style.overflow = 'hidden'; }
+  function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); document.body.style.overflow = ''; }
+  document.getElementById('lightbox').addEventListener('click', closeLightbox);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+</script>
+<script>
   const btn = document.getElementById('projets-btn');
   const menu = document.getElementById('projets-menu');
   btn.addEventListener('click', e => { e.stopPropagation(); menu.classList.toggle('open'); });
   document.addEventListener('click', () => menu.classList.remove('open'));
-
-  function openLightbox(src) {
-    document.getElementById('lightbox-img').src = src;
-    document.getElementById('lightbox').classList.add('open');
-  }
-  function closeLightbox() {
-    document.getElementById('lightbox').classList.remove('open');
-    document.getElementById('lightbox-img').src = '';
-  }
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
 </script>
 </body>
 </html>
